@@ -2,7 +2,7 @@
 
 import os
 import sys
-os.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../'))
 
 #
 # first-sklearn documentation build configuration file, created by
