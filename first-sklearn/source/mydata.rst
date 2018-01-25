@@ -1,7 +1,7 @@
 MYDATA
 ======
 .. automodule:: mydata
-   :members:
+	:members:
 
 * :ref:`genindex`
 * :ref:`modindex`

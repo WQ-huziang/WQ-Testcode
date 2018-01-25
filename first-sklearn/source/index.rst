@@ -9,11 +9,11 @@ Welcome to first test's documentation!
 API
 ===
 .. toctree::
-	:maxdepth: 2
-	:caption: Contents:
+    :maxdepth: 2
+    :caption: Contents:
 
-	main
-	mydata
+    main
+    mydata
     mymodel
 
 

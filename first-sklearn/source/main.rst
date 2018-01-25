@@ -1,7 +1,7 @@
 MAIN
 ====
 .. automodule:: main
-   :members:
+    :members:
 
 * :ref:`genindex`
 * :ref:`modindex`
