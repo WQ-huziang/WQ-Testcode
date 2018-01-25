@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+import os
+import sys
+os.path.insert(0, os.path.abspath('../'))
+
 #
 # first-sklearn documentation build configuration file, created by
 # sphinx-quickstart on Thu Jan 25 06:52:16 2018.

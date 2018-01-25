@@ -4,7 +4,10 @@
 import argparse 
 from mymodel import *
 
-if __name__ == '__main__':
+def myTest():
+    """
+    用于测试使用
+    """ 
     # 测试ModelEngineer类
     me = ModelEngineer()
     me.setLinearRegression()
@@ -28,3 +31,6 @@ if __name__ == '__main__':
     me.train()
     me.evaluateOutSample()
     me.crossTest()
+
+if __name__ == '__main__':
+    myTest()
