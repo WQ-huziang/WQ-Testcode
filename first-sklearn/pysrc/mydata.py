@@ -11,15 +11,14 @@ from sklearn import preprocessing
 class OriginData:
     'OriginData 类，可进行数据存储'
 
-    def __init__(self, dirpath='data\\5min\\', data=None):
+    def __init__(self, dirpath='../data/5min/', data=None):
         """
         类构造函数
             :param self: 类变量本身 
-            :param dirpath='data\\5min\\':  数据存放目录的路径
+            :param dirpath='../data/5min/':  数据存放目录的路径
         """   
         self.dirpath = dirpath
-        if type(data) == pd.DataFrame:
-            self.data = data
+        self.data = data
 
     def loadFromDataFrame(self, df):
         """
@@ -27,7 +26,7 @@ class OriginData:
             :param self: 类变量本身
             :param df: 传入的DataFrame
         """
-        if type(df) != pd.DataFrame:
+        if isinstance(df, pd.DataFrame):
             raise Exception("df is not DataFrame!")
         self.data = df
 
@@ -47,12 +46,16 @@ class OriginData:
             :param self: 类变量本身
             :param df: 与类内匹配的DataFrame
         """   
-        if type(df) != pd.DataFrame:
+        if isinstance(df, pd.DataFrame):
             raise Exception("df is not DataFrame!")
-        elif hasattr(self, 'data') == False:
+        elif not hasattr(self, 'data'):
             self.data = df
         else:
             self.data = self.data.append(df, ignore_index=True)
+
+    def addFromCSV(self, filename):
+        if os.path.exists(self.dirpath + filename) == False:
+            raise Exception("Not exist this file!")
 
 
     def getDataFrame(self):
