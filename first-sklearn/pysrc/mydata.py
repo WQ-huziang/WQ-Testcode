@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 from sklearn.svm import SVC  
 from datetime import datetime, timedelta
-from sklearn import preprocessing
 
 class OriginData:
     'OriginData 类，可进行数据存储'
@@ -92,15 +91,7 @@ class DataFilter(OriginData):
         else:
             return '%Y-%m-%d', timedelta()
 
-    def __calEMA(self, N, a, b):
-        """
-        辅助函数，计算EMA的值。
-            :param self: 类变量本身 
-            :param N: 第N项
-            :param a: close_price_today
-            :param b: ema_yesterday
-        """   
-        return 2 / float(N + 1) * (a - b) + b
+
 
     def addMissingData(self):
         """
@@ -162,118 +153,42 @@ class DataFilter(OriginData):
         newdata = newdata[:-numbers]
         
 
-    def setAvgPrc(self, columnsName="price_change", interval=10):
-        """
-        计算平均值，其中平均值新建一列，该列的名字为原列+'_avg'。
-            :param self: 类变量本身
-            :param columnsName="price_change": 列名
-            :param interval=10: 间隔数，当前值取前interval个求平均
-        """
-        newdata = self.getDataFrame()
-        # 由于没找到深复制的方法，因此新建了一列
-        self.addColumnByContain(newdata[columnsName], columnsName + '_avg')
-        se, se_avg = newdata[columnsName], newdata[columnsName + '_avg']
-        # 前interval个取平均，如果之前的数量少于interval，则之前全部取平均
-        [se_avg.set_value(i, np.mean(se[max(0, i - interval):i + 1])) for i in range(len(se_avg))]
+    # def setAvgPrc(self, columnsName="price_change", interval=10):
+    #     """
+    #     计算平均值，其中平均值新建一列，该列的名字为原列+'_avg'。
+    #         :param self: 类变量本身
+    #         :param columnsName="price_change": 列名
+    #         :param interval=10: 间隔数，当前值取前interval个求平均
+    #     """
+    #     newdata = self.getDataFrame()
+    #     # 由于没找到深复制的方法，因此新建了一列
+    #     self.addColumnByContain(newdata[columnsName], columnsName + '_avg')
+    #     se, se_avg = newdata[columnsName], newdata[columnsName + '_avg']
+    #     # 前interval个取平均，如果之前的数量少于interval，则之前全部取平均
+    #     [se_avg.set_value(i, np.mean(se[max(0, i - interval):i + 1])) for i in range(len(se_avg))]
 
-    def setMACD(self, columnsName='close', short=12, llong=26, di=9):
-        """
-        计算MACD的值，其中MACD新建一列，该列名字为原列+'_macd'。
-        MACD[i + 1] = 2 * a * (emashort[i + 1] - emalong[i + 1] - MACD[i]) - MACD[i]
-            :param self: 类变量本身
-            :param columnsName='close': 列名，默认为close，即关盘价格
-            :param short=12: short ema的a值，一般为12
-            :param llong=26: long ema的a值，一般为26
-            :param di=9: diff的a值，一般为9
-        """   
-        newdata = self.getDataFrame()
-        # 由于没找到深复制的方法，因此新建了一列
-        self.addColumnByContain(newdata[columnsName], columnsName + '_macd')
-        se, se_macd = newdata[columnsName], newdata[columnsName + '_macd']
-        # 初始化第一个值
-        emashort, emalong = newdata[columnsName][0], newdata[columnsName][0]
-        se_macd[0] = emashort - emalong 
-        # 递归计算MACD
-        for i in range(len(se_macd))[1:]:
-            emashort = self.__calEMA(short, newdata[columnsName][i], emashort)
-            emalong = self.__calEMA(llong, newdata[columnsName][i], emalong)
-            se_macd[i] = self.__calEMA(di, 2 * (emashort - emalong), se_macd[i - 1])
-        
-class DataNormal:
-    '数据归一化类，归一化对X和Y同时进行归一化，此时数据包含X和Y'
-
-    def setScale(self, df):
-        """
-        设置数据标准化器
-            :param self: 类变量本身
-            :param df: 传入DataFrame
-        """   
-        if type(df) != pd.DataFrame:
-            raise Exception("df is not DataFrame!")
-        # 定义归一化器
-        self.type = 'scale'
-        self.process = preprocessing.StandardScaler().fit(df)
-    
-    def setMinMaxScale(self, df):
-        """
-        设置数据最大最小化标准化器
-            :param self: 类变量本身
-            :param df: 传入DataFrame
-        """   
-        if type(df) != pd.DataFrame:
-            raise Exception("df is not DataFrame!")
-        # 定义归一化器
-        self.type = 'minmaxscale'
-        self.process = preprocessing.MinMaxScaler().fit(df)
-    
-        
-    def setNormalizer(self, df):
-        """
-        设置数据最大最小化标准化器
-            :param self: 类变量本身
-            :param df: 传入DataFrame
-        """   
-        if type(df) != pd.DataFrame:
-            raise Exception("df is not DataFrame!")
-        # 定义归一化器
-        self.type = 'normal'
-        self.process = preprocessing.Normalizer().fit(df)
-        
-    def setBinarizer(self, df):
-        """
-        设置数据最大最小化标准化器
-            :param self: 类变量本身
-            :param df: 传入DataFrame
-        """   
-        if type(df) != pd.DataFrame:
-            raise Exception("df is not DataFrame!")
-        # 定义归一化器
-        self.type = 'binarizer'
-        self.process = preprocessing.Binarizer().fit(df)
-
-    def getScaleType(self):
-        """
-        得到scale的类型。
-            :param self: 类变量本身
-            :returns: 返回一个字符串，如果未设置，抛出Excpetion错误 
-        """  
-        if hasattr(self, 'type') == False:
-            raise Exception("Please set scale first!")
-        else:
-            return self.type
-    
-    def processData(self, df):
-        """
-        归一化指定DataFrame，如果scale未设置，抛出Exception错误
-            :param self: 类变量本身
-            :param df: 传入DataFrame
-            :returns: 返回归一化后的array
-        """   
-        if type(df) != pd.DataFrame:
-            raise Exception("df is not DataFrame!")
-        # 检验scale是否存在
-        self.getScaleType()
-        return self.process.transform(df)
+    # def setMACD(self, columnsName='close', short=12, llong=26, di=9):
+    #     """
+    #     计算MACD的值，其中MACD新建一列，该列名字为原列+'_macd'。
+    #     MACD[i + 1] = 2 * a * (emashort[i + 1] - emalong[i + 1] - MACD[i]) - MACD[i]
+    #         :param self: 类变量本身
+    #         :param columnsName='close': 列名，默认为close，即关盘价格
+    #         :param short=12: short ema的a值，一般为12
+    #         :param llong=26: long ema的a值，一般为26
+    #         :param di=9: diff的a值，一般为9
+    #     """   
+    #     newdata = self.getDataFrame()
+    #     # 由于没找到深复制的方法，因此新建了一列
+    #     self.addColumnByContain(newdata[columnsName], columnsName + '_macd')
+    #     se, se_macd = newdata[columnsName], newdata[columnsName + '_macd']
+    #     # 初始化第一个值
+    #     emashort, emalong = newdata[columnsName][0], newdata[columnsName][0]
+    #     se_macd[0] = emashort - emalong 
+    #     # 递归计算MACD
+    #     for i in range(len(se_macd))[1:]:
+    #         emashort = self.__calEMA(short, newdata[columnsName][i], emashort)
+    #         emalong = self.__calEMA(llong, newdata[columnsName][i], emalong)
+    #         se_macd[i] = self.__calEMA(di, 2 * (emashort - emalong), se_macd[i - 1])
 
 if __name__ == '__main__':
     # 测试OriginData类
