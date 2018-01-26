@@ -1,0 +1,420 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>mydata &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for mydata</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env</span>
+<span class="c1"># -*- coding: UTF-8 -*- </span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="k">import</span> <span class="n">SVC</span>  
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">preprocessing</span>
+
+<div class="viewcode-block" id="OriginData"><a class="viewcode-back" href="../mydata.html#mydata.OriginData">[docs]</a><span class="k">class</span> <span class="nc">OriginData</span><span class="p">:</span>
+    <span class="s1">&#39;OriginData 类，可进行数据存储&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirpath</span><span class="o">=</span><span class="s1">&#39;data</span><span class="se">\\</span><span class="s1">5min</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        类构造函数</span>
+<span class="sd">            :param self: 类变量本身 </span>
+<span class="sd">            :param dirpath=&#39;data\\5min\\&#39;:  数据存放目录的路径</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">=</span> <span class="n">dirpath</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="OriginData.loadFromDataFrame"><a class="viewcode-back" href="../mydata.html#mydata.OriginData.loadFromDataFrame">[docs]</a>    <span class="k">def</span> <span class="nf">loadFromDataFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        载入数据</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param df: 传入的DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">!=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;df is not DataFrame!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="OriginData.loadFromCSV"><a class="viewcode-back" href="../mydata.html#mydata.OriginData.loadFromCSV">[docs]</a>    <span class="k">def</span> <span class="nf">loadFromCSV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取指定CSV文件中的数据</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param filename: csv数据文件路径，包含后缀名</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Not exist this file!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OriginData.addFromDataFrame"><a class="viewcode-back" href="../mydata.html#mydata.OriginData.addFromDataFrame">[docs]</a>    <span class="k">def</span> <span class="nf">addFromDataFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        添加DataFrame，如果类内data为空，等同于loadFromDataFrame</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param df: 与类内匹配的DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">!=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;df is not DataFrame!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OriginData.getDataFrame"><a class="viewcode-back" href="../mydata.html#mydata.OriginData.getDataFrame">[docs]</a>    <span class="k">def</span> <span class="nf">getDataFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到data属性，可能为None</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :returns: 本身储存的DataFream</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Please set data first!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span></div>
+
+<div class="viewcode-block" id="OriginData.setDirPath"><a class="viewcode-back" href="../mydata.html#mydata.OriginData.setDirPath">[docs]</a>    <span class="k">def</span> <span class="nf">setDirPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置文件夹路径</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param dirpath: 类内部的dirpath</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">=</span> <span class="n">dirpath</span></div></div>
+
+<div class="viewcode-block" id="DataFilter"><a class="viewcode-back" href="../mydata.html#mydata.DataFilter">[docs]</a><span class="k">class</span> <span class="nc">DataFilter</span><span class="p">(</span><span class="n">OriginData</span><span class="p">):</span>
+    <span class="s1">&#39;数据过滤类，可以选择X，产生X，生成Y&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__findTimeInterval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        辅助函数，通过给定时间判断日期时间间隔，从而进行数据添加。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param string: 给定日期，以字符串形式</span>
+<span class="sd">            :returns: 返回二元组，第一个是日期字符串转为日期的标准str模板，第二个是时间间隔</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="c1"># 通过Date序列中的长度判断读取数据的时间间隔</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__calEMA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        辅助函数，计算EMA的值。</span>
+<span class="sd">            :param self: 类变量本身 </span>
+<span class="sd">            :param N: 第N项</span>
+<span class="sd">            :param a: close_price_today</span>
+<span class="sd">            :param b: ema_yesterday</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+
+<div class="viewcode-block" id="DataFilter.addMissingData"><a class="viewcode-back" href="../mydata.html#mydata.DataFilter.addMissingData">[docs]</a>    <span class="k">def</span> <span class="nf">addMissingData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        补全未知数据，即不按间隔的数据，补全的数据取平均。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+        <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataFrame</span><span class="p">()</span>
+        <span class="n">timeformat</span><span class="p">,</span> <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__findTimeInterval</span><span class="p">(</span><span class="n">newdata</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">timeformat</span><span class="p">),</span> <span class="n">newdata</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+        <span class="c1"># 由于插入会影响DataFrame顺序，因此从后往前插入</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">))[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="n">times</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">times</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">interval</span><span class="p">:</span>
+                <span class="n">newdata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">newdata</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">columns</span><span class="o">=</span><span class="n">newdata</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+                <span class="c1"># 第一项设置成add date，其他项取平均</span>
+                <span class="n">newdata</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;add date&#39;</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">newdata</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span>
+                        <span class="n">newdata</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;add data&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">newdata</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">newdata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">newdata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">newdata</span> <span class="o">=</span> <span class="n">newdata</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newdata</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newdata</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span><span class="p">:],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataFilter.filterDataByNames"><a class="viewcode-back" href="../mydata.html#mydata.DataFilter.filterDataByNames">[docs]</a>    <span class="k">def</span> <span class="nf">filterDataByNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        新建新的DataFrame，通过给定names列表过滤数据，在names内的列会被删除。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param names: 可以转换为set的数据类型</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataFrame</span><span class="p">()</span>
+        <span class="c1"># 删除公共集合</span>
+        <span class="k">for</span> <span class="n">columnsindex</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">newdata</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+            <span class="k">del</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsindex</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DataFilter.addColumnByContain"><a class="viewcode-back" href="../mydata.html#mydata.DataFilter.addColumnByContain">[docs]</a>    <span class="k">def</span> <span class="nf">addColumnByContain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contain</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        新加入列，其中contain必须是一个集合。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param contain: 给定的集合</span>
+<span class="sd">            :param name: 新的列名</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataFrame</span><span class="p">()</span>
+        <span class="c1"># 没有sizeof属性，认定不为集合</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">contain</span><span class="p">,</span> <span class="s1">&#39;__sizeof__&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Please input contains!&quot;</span><span class="p">)</span>
+        <span class="n">newdata</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">contain</span></div>
+
+<div class="viewcode-block" id="DataFilter.shiftColumn"><a class="viewcode-back" href="../mydata.html#mydata.DataFilter.shiftColumn">[docs]</a>    <span class="k">def</span> <span class="nf">shiftColumn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">numbers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将某行向上移动numbers，并删除最后的numbers行</span>
+<span class="sd">            :param self: 类的变量名</span>
+<span class="sd">            :param name=None: 移动行的名字，若为None，移动最后一行</span>
+<span class="sd">            :param numbers=1: 移动位数</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataFrame</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newdata</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="n">numbers</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newdata</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="n">numbers</span><span class="p">)</span>
+        <span class="n">newdata</span> <span class="o">=</span> <span class="n">newdata</span><span class="p">[:</span><span class="o">-</span><span class="n">numbers</span><span class="p">]</span></div>
+        
+
+<div class="viewcode-block" id="DataFilter.setAvgPrc"><a class="viewcode-back" href="../mydata.html#mydata.DataFilter.setAvgPrc">[docs]</a>    <span class="k">def</span> <span class="nf">setAvgPrc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columnsName</span><span class="o">=</span><span class="s2">&quot;price_change&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        计算平均值，其中平均值新建一列，该列的名字为原列+&#39;_avg&#39;。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param columnsName=&quot;price_change&quot;: 列名</span>
+<span class="sd">            :param interval=10: 间隔数，当前值取前interval个求平均</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataFrame</span><span class="p">()</span>
+        <span class="c1"># 由于没找到深复制的方法，因此新建了一列</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addColumnByContain</span><span class="p">(</span><span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span><span class="p">],</span> <span class="n">columnsName</span> <span class="o">+</span> <span class="s1">&#39;_avg&#39;</span><span class="p">)</span>
+        <span class="n">se</span><span class="p">,</span> <span class="n">se_avg</span> <span class="o">=</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span><span class="p">],</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span> <span class="o">+</span> <span class="s1">&#39;_avg&#39;</span><span class="p">]</span>
+        <span class="c1"># 前interval个取平均，如果之前的数量少于interval，则之前全部取平均</span>
+        <span class="p">[</span><span class="n">se_avg</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">se</span><span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="n">interval</span><span class="p">):</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">se_avg</span><span class="p">))]</span></div>
+
+<div class="viewcode-block" id="DataFilter.setMACD"><a class="viewcode-back" href="../mydata.html#mydata.DataFilter.setMACD">[docs]</a>    <span class="k">def</span> <span class="nf">setMACD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columnsName</span><span class="o">=</span><span class="s1">&#39;close&#39;</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">llong</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span> <span class="n">di</span><span class="o">=</span><span class="mi">9</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        计算MACD的值，其中MACD新建一列，该列名字为原列+&#39;_macd&#39;。</span>
+<span class="sd">        MACD[i + 1] = 2 * a * (emashort[i + 1] - emalong[i + 1] - MACD[i]) - MACD[i]</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param columnsName=&#39;close&#39;: 列名，默认为close，即关盘价格</span>
+<span class="sd">            :param short=12: short ema的a值，一般为12</span>
+<span class="sd">            :param llong=26: long ema的a值，一般为26</span>
+<span class="sd">            :param di=9: diff的a值，一般为9</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataFrame</span><span class="p">()</span>
+        <span class="c1"># 由于没找到深复制的方法，因此新建了一列</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addColumnByContain</span><span class="p">(</span><span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span><span class="p">],</span> <span class="n">columnsName</span> <span class="o">+</span> <span class="s1">&#39;_macd&#39;</span><span class="p">)</span>
+        <span class="n">se</span><span class="p">,</span> <span class="n">se_macd</span> <span class="o">=</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span><span class="p">],</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span> <span class="o">+</span> <span class="s1">&#39;_macd&#39;</span><span class="p">]</span>
+        <span class="c1"># 初始化第一个值</span>
+        <span class="n">emashort</span><span class="p">,</span> <span class="n">emalong</span> <span class="o">=</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">se_macd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">emashort</span> <span class="o">-</span> <span class="n">emalong</span> 
+        <span class="c1"># 递归计算MACD</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">se_macd</span><span class="p">))[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">emashort</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calEMA</span><span class="p">(</span><span class="n">short</span><span class="p">,</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">emashort</span><span class="p">)</span>
+            <span class="n">emalong</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calEMA</span><span class="p">(</span><span class="n">llong</span><span class="p">,</span> <span class="n">newdata</span><span class="p">[</span><span class="n">columnsName</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">emalong</span><span class="p">)</span>
+            <span class="n">se_macd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calEMA</span><span class="p">(</span><span class="n">di</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">emashort</span> <span class="o">-</span> <span class="n">emalong</span><span class="p">),</span> <span class="n">se_macd</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span></div></div>
+        
+<div class="viewcode-block" id="DataNormal"><a class="viewcode-back" href="../mydata.html#mydata.DataNormal">[docs]</a><span class="k">class</span> <span class="nc">DataNormal</span><span class="p">:</span>
+    <span class="s1">&#39;数据归一化类，归一化对X和Y同时进行归一化，此时数据包含X和Y&#39;</span>
+
+<div class="viewcode-block" id="DataNormal.setScale"><a class="viewcode-back" href="../mydata.html#mydata.DataNormal.setScale">[docs]</a>    <span class="k">def</span> <span class="nf">setScale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置数据标准化器</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param df: 传入DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">!=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;df is not DataFrame!&quot;</span><span class="p">)</span>
+        <span class="c1"># 定义归一化器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;scale&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="DataNormal.setMinMaxScale"><a class="viewcode-back" href="../mydata.html#mydata.DataNormal.setMinMaxScale">[docs]</a>    <span class="k">def</span> <span class="nf">setMinMaxScale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置数据最大最小化标准化器</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param df: 传入DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">!=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;df is not DataFrame!&quot;</span><span class="p">)</span>
+        <span class="c1"># 定义归一化器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;minmaxscale&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+    
+        
+<div class="viewcode-block" id="DataNormal.setNormalizer"><a class="viewcode-back" href="../mydata.html#mydata.DataNormal.setNormalizer">[docs]</a>    <span class="k">def</span> <span class="nf">setNormalizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置数据最大最小化标准化器</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param df: 传入DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">!=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;df is not DataFrame!&quot;</span><span class="p">)</span>
+        <span class="c1"># 定义归一化器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">Normalizer</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="DataNormal.setBinarizer"><a class="viewcode-back" href="../mydata.html#mydata.DataNormal.setBinarizer">[docs]</a>    <span class="k">def</span> <span class="nf">setBinarizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置数据最大最小化标准化器</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param df: 传入DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">!=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;df is not DataFrame!&quot;</span><span class="p">)</span>
+        <span class="c1"># 定义归一化器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;binarizer&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">Binarizer</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataNormal.getScaleType"><a class="viewcode-back" href="../mydata.html#mydata.DataNormal.getScaleType">[docs]</a>    <span class="k">def</span> <span class="nf">getScaleType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到scale的类型。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :returns: 返回一个字符串，如果未设置，抛出Excpetion错误 </span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Please set scale first!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span></div>
+    
+<div class="viewcode-block" id="DataNormal.processData"><a class="viewcode-back" href="../mydata.html#mydata.DataNormal.processData">[docs]</a>    <span class="k">def</span> <span class="nf">processData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        归一化指定DataFrame，如果scale未设置，抛出Exception错误</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param df: 传入DataFrame</span>
+<span class="sd">            :returns: 返回归一化后的array</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">!=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;df is not DataFrame!&quot;</span><span class="p">)</span>
+        <span class="c1"># 检验scale是否存在</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getScaleType</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># 测试OriginData类</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">OriginData</span><span class="p">()</span>
+    <span class="c1">#data.loadFromCSV(&#39;000200.csv&#39;)</span>
+    <span class="c1">#print data.dirpath + &#39;000001.csv&#39;</span>
+    <span class="c1">#data.loadFromCSV(&#39;000001.csv&#39;)</span>
+    <span class="c1">#print data.getDataFrame(), len(data.getDataFrame())</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">+</span> <span class="s1">&#39;000001.csv&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 测试DataFilter类</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">DataFilter</span><span class="p">()</span>
+    <span class="c1">#print data.dirpath + &#39;000001.csv&#39;</span>
+    <span class="c1">#data.loadFromCSV(&#39;000001.csv&#39;)</span>
+    <span class="c1">#print data.getDataFrame(), len(data.getDataFrame())</span>
+    <span class="c1">#df = pd.read_csv(data.dirpath + &#39;000002.csv&#39;)</span>
+    <span class="c1">#print df</span>
+    <span class="c1">#data.addFromDataFrame(df)</span>
+    <span class="c1">#print len(data.data)</span>
+    <span class="c1">#data.addMissingData()</span>
+    <span class="c1">#print len(data.data)</span>
+    <span class="c1">#data.filterDataByNames([&#39;date&#39;, &#39;ma10&#39;, &#39;ma20&#39;])</span>
+    
+    <span class="c1">#data.addColumnByContain(range(len(data.getDataFrame())), &#39;test&#39;)</span>
+    <span class="c1">#print data.data.columns</span>
+    <span class="c1">#test = pd.read_csv(&#39;data\\5min\\000011.csv&#39;)</span>
+    <span class="c1">#test[&#39;test&#39;] = range(len(test))</span>
+    <span class="c1">#print test.columns</span>
+
+    <span class="c1">#data.setAvgPrc(&#39;open&#39;, 10)</span>
+    <span class="c1">#print data.getDataFrame()[&#39;open_avg&#39;]</span>
+    
+    <span class="c1">#data.setMACD()</span>
+    <span class="c1"># print data.getDataFrame()[&#39;close_macd&#39;]</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="nb">print</span> <span class="n">df</span>
+    
+    <span class="c1"># 测试DataNormal类</span>
+    <span class="n">dm</span> <span class="o">=</span> <span class="n">DataNormal</span><span class="p">()</span>
+    <span class="n">dm</span><span class="o">.</span><span class="n">setNormalizer</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">dm</span><span class="o">.</span><span class="n">processData</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="nb">print</span> <span class="n">t</span>
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../main.html">MAIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mydata.html">MYDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mymodel.html">MYMODEL</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

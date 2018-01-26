@@ -196,7 +196,6 @@ class DataFilter(OriginData):
             emalong = self.__calEMA(llong, newdata[columnsName][i], emalong)
             se_macd[i] = self.__calEMA(di, 2 * (emashort - emalong), se_macd[i - 1])
         
-
 class DataNormal:
     '数据归一化类，归一化对X和Y同时进行归一化，此时数据包含X和Y'
 

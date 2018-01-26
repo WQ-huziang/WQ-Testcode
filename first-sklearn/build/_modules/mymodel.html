@@ -1,0 +1,284 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>mymodel &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for mymodel</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env</span>
+<span class="c1"># -*- coding: UTF-8 -*- </span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">matrix</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="k">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="k">import</span> <span class="n">SVC</span>
+<span class="kn">from</span> <span class="nn">sklearn.neural_network</span> <span class="k">import</span> <span class="n">MLPClassifier</span> 
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">cross_val_predict</span>
+<span class="kn">from</span> <span class="nn">mydata</span> <span class="k">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="ModelEngineer"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer">[docs]</a><span class="k">class</span> <span class="nc">ModelEngineer</span><span class="p">:</span>
+    <span class="s1">&#39;机器学习，数据输出等操作&#39;</span>
+    <span class="n">mydata</span> <span class="o">=</span> <span class="n">DataFilter</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear regression&#39;</span><span class="p">,</span> <span class="n">trainingPart</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        类初始化函数。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param method=&#39;linear regression&#39;: model类别，可以为&#39;linear regression&#39;, &#39;svc&#39;, &#39;neural netword&#39;</span>
+<span class="sd">            :param trainingPart=0.9: 训练集占整体的比例，默认为0.9</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">trainingPart</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">trainingPart</span> <span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Training Part is belong to (0, 1)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;linear regression&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;svc&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">()</span>
+            <span class="nb">print</span> <span class="s1">&#39;Warning: your</span><span class="se">\&#39;</span><span class="s1">s y data</span><span class="se">\&#39;</span><span class="s1">s type need to be int!&#39;</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;neural netword&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">()</span>
+            <span class="nb">print</span> <span class="s1">&#39;Warning: your</span><span class="se">\&#39;</span><span class="s1">s y data</span><span class="se">\&#39;</span><span class="s1">s type need to be int!&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;linear regression&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trainingPart</span> <span class="o">=</span> <span class="n">trainingPart</span>
+
+<div class="viewcode-block" id="ModelEngineer.setX"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.setX">[docs]</a>    <span class="k">def</span> <span class="nf">setX</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdata</span><span class="p">):</span>   
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置X集合       </span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param newdata: 传入的DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">mydata</span><span class="o">.</span><span class="n">loadFromDataFrame</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="ModelEngineer.addX"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.addX">[docs]</a>    <span class="k">def</span> <span class="nf">addX</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        添加X集合       </span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param newdata: 传入的DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">mydata</span><span class="o">.</span><span class="n">addFromDataFrame</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelEngineer.setY"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.setY">[docs]</a>    <span class="k">def</span> <span class="nf">setY</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">se</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置Y集合       </span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param se: 传入的序列</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">mydata</span><span class="o">.</span><span class="n">addColumnByContain</span><span class="p">(</span><span class="n">se</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelEngineer.setSMVType"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.setSMVType">[docs]</a>    <span class="k">def</span> <span class="nf">setSMVType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置smv模型。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;svm&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ModelEngineer.setLinearRegression"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.setLinearRegression">[docs]</a>    <span class="k">def</span> <span class="nf">setLinearRegression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置线性回归模型。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;linear regression&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ModelEngineer.setNeuralNetword"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.setNeuralNetword">[docs]</a>    <span class="k">def</span> <span class="nf">setNeuralNetword</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置神经网络模型。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;neural netword&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ModelEngineer.train"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        进行测试</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mydata</span><span class="o">.</span><span class="n">getDataFrame</span><span class="p">()</span>
+        <span class="c1"># 生成此次的训练集和测试集</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_y</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">newdata</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">newdata</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span> <span class="n">test_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trainingPart</span><span class="p">)</span>
+        <span class="c1"># 模拟此次训练集合</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_y</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="s2">&quot;Training is Over!&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_y</span>        </div>
+
+<div class="viewcode-block" id="ModelEngineer.evaluateOutSample"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.evaluateOutSample">[docs]</a>    <span class="k">def</span> <span class="nf">evaluateOutSample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        显示输出并绘图</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+        <span class="n">predict_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_X</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drawTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_X</span><span class="p">,</span> <span class="n">predict_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelEngineer.crossTest"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.crossTest">[docs]</a>    <span class="k">def</span> <span class="nf">crossTest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        显示交叉验证结果并绘图</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="c1"># 进行交叉验证</span>
+        <span class="n">predict_y</span> <span class="o">=</span> <span class="n">cross_val_predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drawTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_X</span><span class="p">,</span> <span class="n">predict_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelEngineer.drawTable"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.drawTable">[docs]</a>    <span class="k">def</span> <span class="nf">drawTable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">predict</span><span class="p">,</span> <span class="n">real</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        画图。</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param X: X序列</span>
+<span class="sd">            :param predict: 预测值</span>
+<span class="sd">            :param real: 实际值</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">real</span> <span class="o">=</span> <span class="n">real</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1">#         print metrics.classification_report(real, predict)</span>
+<span class="c1">#         print &#39;confluse matrix:&#39;</span>
+<span class="c1">#         print metrics.confusion_matrix(real, predict)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;navy&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">+</span> <span class="s1">&#39; model&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">predict</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Real Answer&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>  
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>  
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ModelEngineer.getData"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.getData">[docs]</a>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到Data</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mydata</span></div>
+
+<div class="viewcode-block" id="ModelEngineer.getModelMethodType"><a class="viewcode-back" href="../mymodel.html#mymodel.ModelEngineer.getModelMethodType">[docs]</a>    <span class="k">def</span> <span class="nf">getModelMethodType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到Model方法值</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span></div></div>
+        
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># 测试ModelEngineer类</span>
+    <span class="n">me</span> <span class="o">=</span> <span class="n">ModelEngineer</span><span class="p">()</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">setLinearRegression</span><span class="p">()</span>
+    <span class="n">mydata</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">getData</span><span class="p">()</span>
+    <span class="n">mydata</span><span class="o">.</span><span class="n">loadFromCSV</span><span class="p">(</span><span class="s1">&#39;000001.csv&#39;</span><span class="p">)</span>
+    <span class="c1">#print mydata.getDataFrame()</span>
+    <span class="c1">#print mydata</span>
+    
+    <span class="c1"># 修改数据</span>
+    <span class="n">mydata</span><span class="o">.</span><span class="n">filterDataByNames</span><span class="p">([</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;p_change&#39;</span><span class="p">,</span> <span class="s1">&#39;turnover&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">])</span>
+    <span class="n">mydata</span><span class="o">.</span><span class="n">setMACD</span><span class="p">()</span>
+    <span class="n">mydata</span><span class="o">.</span><span class="n">setAvgPrc</span><span class="p">(</span><span class="n">columnsName</span><span class="o">=</span><span class="s1">&#39;close&#39;</span><span class="p">)</span>
+    <span class="n">mydata</span><span class="o">.</span><span class="n">shiftColumn</span><span class="p">(</span><span class="n">numbers</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    
+    <span class="c1">#dn = DataNormal()</span>
+    <span class="c1">#normaldata = dn.setNormalizer(mydata.getDataFrame())</span>
+    
+    <span class="c1"># 进行模拟</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">setLinearRegression</span><span class="p">()</span>
+    <span class="c1">#print mydata.getDataFrame()</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">evaluateOutSample</span><span class="p">()</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">crossTest</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../main.html">MAIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mydata.html">MYDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mymodel.html">MYMODEL</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
