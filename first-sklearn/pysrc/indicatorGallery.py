@@ -5,55 +5,6 @@ __date__ = '2018-1-26 15:27'
 
 import numpy as np
 import pandas as pd
-from sklearn import preprocessing
-
-class NormalizationGallery:
-    '数据归一化库类，归一化对DataFrame所有数据'
-    '此类为静态类'
-
-    @staticmethod
-    def scale(df):
-        """
-        将数据标准化
-            :param df: 传入DataFrame
-            :returns: 标准化后的数据
-        """
-        if not isinstance(df, pd.DataFrame):
-            raise Exception("df is not DataFrame!")
-        return preprocessing.scale(df)
-    
-    @staticmethod
-    def minMaxScale(df):
-        """
-        将数据最大最小化标准化
-            :param df: 传入DataFrame
-            :returns: 标准化后的数据
-        """   
-        if not isinstance(df, pd.DataFrame):
-            raise Exception("df is not DataFrame!")
-        return preprocessing.minmax_scale(df)
-    
-    @staticmethod
-    def normalize(df):
-        """
-        将数据正态分布化
-            :param df: 传入DataFrame
-            :returns: 标准化后的数据
-        """
-        if not isinstance(df, pd.DataFrame):
-            raise Exception("df is not DataFrame!")
-        return preprocessing.normalize(df)
-        
-    @staticmethod
-    def binarize(df):
-        """
-        将数据二值化
-            :param df: 传入DataFrame
-            :returns: 标准化后的数据
-        """   
-        if not isinstance(df, pd.DataFrame):
-            raise Exception("df is not DataFrame!")
-        return preprocessing.binarize(df)
 
 class IndicatorGallery:
     '数据指标库类，用于计算Series列的各种指标'
@@ -185,17 +136,10 @@ class IndicatorGallery:
             se_macd.append(IndicatorGallery._calEMA(diff, 2 * (emashort - emalong), se_macd[i - 1]))
         return pd.Series(se_macd)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     df = pd.read_csv('../data/1day/000001.csv')
     del df['date']
-    #print df
-
-    # 测试NormalizationGallery类
-    t1 = NormalizationGallery.scale(df)
-    NormalizationGallery.minMaxScale(df)
-    NormalizationGallery.normalize(df)
-    NormalizationGallery.binarize(df)
-
+    
     # 测试IndicatorGallery类
     series = df['close']
     IndicatorGallery.getNext(series)
@@ -207,4 +151,3 @@ if __name__ == '__main__':
     IndicatorGallery.getMACD(series)
     IndicatorGallery.getAheadCal(series, lambda x: x)
     IndicatorGallery.getAheadCalWithFilter(series, lambda x: x, lambda df, col, index: df.iloc[index][col] > 0, [df, 'price_change'])
-

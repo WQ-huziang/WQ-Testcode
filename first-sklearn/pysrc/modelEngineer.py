@@ -12,7 +12,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier 
 from sklearn.model_selection import cross_val_predict
-from mydata import *
 
 class ModelEngineer:
     '机器学习，数据输出等操作'
