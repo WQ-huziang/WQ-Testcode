@@ -28,7 +28,8 @@ class FastResearchData:
             :param df: 传入的DataFrame
         """
         if not isinstance(df, pd.DataFrame):
-            raise Exception("df is not DataFrame!")
+            print "df is not DataFrame!"
+            return
         self.stockdata[str(stockname)] = df
 
     def addDataFromCSV(self, filename):
@@ -38,8 +39,10 @@ class FastResearchData:
             :param filename: csv数据文件路径，包含后缀名
         """
         if os.path.exists(self.dirpath + filename) == False:
-            raise Exception("Not exist this file!")
+            print "Not exist " + filename +" file!"
+            return
         self.stockdata[filename[filename.rfind('/') + 1:filename.rfind('.')]] = pd.read_csv(self.dirpath + filename)
+
 
     def delDataByStockname(self, stockname):
         """
@@ -63,7 +66,7 @@ class FastResearchData:
             appenddataframe = pd.concat([dataframe, pd.Series(np.full(len(dataframe), int(stockname)), name='stockname')], axis=1)
             allstockdata = allstockdata.append(appenddataframe, ignore_index=True)
         # 重新排序，重新设置下标
-        allstockdata = allstockdata.sort_index(ascending=False)
+        allstockdata = allstockdata.sort_index(ascending=True)
         allstockdata = allstockdata.reset_index(drop=True)
         return allstockdata
 

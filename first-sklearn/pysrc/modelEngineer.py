@@ -13,6 +13,11 @@ from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier 
 from sklearn.model_selection import cross_val_predict
 
+from fastResearchData import FastResearchData
+from indicatorGallery import IndicatorGallery
+from refleshData import RefleshData
+from normalizationGallery import NormalizationGallery
+
 class ModelEngineer:
     '机器学习，数据输出等操作'
 
@@ -104,7 +109,7 @@ class ModelEngineer:
             :returns: 返回train_x和train_y
         """   
         # 生成此次的训练集和测试集
-        self.train_X, self.test_X, self.train_y, self.test_y = train_test_split(self.X, self.y, test_size=self.trainingpart)
+        self.train_X, self.test_X, self.train_y, self.test_y = train_test_split(self.X, self.y, test_size=(1 - self.trainingpart))
         # 模拟此次训练集合
         self.model.fit(self.train_X, self.train_y)
         print "Training X'size:", self.train_X.shape
@@ -149,12 +154,13 @@ class ModelEngineer:
         # 消除混乱的index，对index进行重新排序
         X = X.reset_index(drop=True)
         real = real.reset_index(drop=True)
-        weight = 1
+        weight = 0.5
 #         print metrics.classification_report(real, predict)
 #         print 'confluse matrix:'
 #         print metrics.confusion_matrix(real, predict)
         plt.plot(X.index, real, color='navy', lw=weight, label=self.method + ' model')
         plt.plot(X.index, predict, color='red', lw=weight, label='Real Answer')
+        plt.plot(X.index, real - predict, color='green', lw=weight, label='Error')
         plt.xlabel('X')  
         plt.ylabel('Y')
         plt.legend()
@@ -170,22 +176,30 @@ class ModelEngineer:
         
 
 if __name__ == '__main__':
-    # 进行数据处理
-    mydata = DataFilter()
-    mydata.loadFromCSV('000001.csv')
-    # 修改数据
-    mydata.filterDataByNames(['date', 'p_change', 'turnover', 'open', 'high', 'low'])
-    mydata.setMACD()
-    mydata.setAvgPrc(columnsName='close')
-    mydata.shiftColumn(numbers=5)
-    
+    # 进行数据读取
+    data = FastResearchData()
+    #print data.getAllFilePath()
+    for i in range(400, 500):
+        data.addDataFromCSV('000' + str(i) + '.csv')
+    #print data.getDataFrameByStockname('000400')
+    data.addDataFromKeyValue('mystock', data.concatAllStockData())
+    testdata = data.getDataFrameByStockname('mystock')
+
+    # 数据更新
+    del testdata['stockname']
+    del testdata['open']
+    del testdata['date']
+    testdata['macd'] = IndicatorGallery.getMACD(testdata.close)
+    testdata['ahead_macd'] = IndicatorGallery.getAheadData(testdata.macd, interval=5)
+    #testdata['macd'] = RefleshData.predictNanByColumn(testdata, 'macd')
+    testdata = RefleshData.deleteRowWithNan(testdata)
+
     # 测试ModelEngineer类
     me = ModelEngineer()
-    me.setX(mydata.getDataFrame().iloc[:,:-1])
-    me.setY(mydata.getDataFrame().iloc[:,-1])
+    me.setX(testdata.iloc[:,:-1])
+    me.setY(testdata.iloc[:,-1])
     me.setLinearRegression()
-    
     # 进行模拟
     me.train()
     me.test()
-    me.crossTest()
+    #me.crossTest()
