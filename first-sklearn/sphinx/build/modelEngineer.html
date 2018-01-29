@@ -1,0 +1,329 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>MODELENGINEER &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="NORMALIZATIONGALLERY" href="normalizationGallery.html" />
+    <link rel="prev" title="MAIN" href="main.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-modelEngineer">
+<span id="modelengineer"></span><h1>MODELENGINEER<a class="headerlink" href="#module-modelEngineer" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="modelEngineer.ModelEngineer">
+<em class="property">class </em><code class="descclassname">modelEngineer.</code><code class="descname">ModelEngineer</code><span class="sig-paren">(</span><em>methodname='linear regression'</em>, <em>trainingpart=0.9</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer" title="Permalink to this definition">¶</a></dt>
+<dd><p>机器学习，数据输出等操作</p>
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.addX">
+<code class="descname">addX</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.addX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.addX" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>添加X集合，如果X未设置，则设置X集合</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param newdata:</th><td class="field-body">传入的DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.crossVertifyTestData">
+<code class="descname">crossVertifyTestData</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.crossVertifyTestData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.crossVertifyTestData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>交叉验证Test数据并返回结果</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">returns:</th><td class="field-body">返回真正的y和预测的y，真正的y在前面</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.getModelMethodName">
+<code class="descname">getModelMethodName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.getModelMethodName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.getModelMethodName" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>得到Model方法值</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>given_X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.predict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>进行预测</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param given_X:</th><td class="field-body">给定X数据</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">预测值y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.setLinearRegression">
+<code class="descname">setLinearRegression</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.setLinearRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.setLinearRegression" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>设置线性回归模型。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.setNeuralNetword">
+<code class="descname">setNeuralNetword</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.setNeuralNetword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.setNeuralNetword" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>设置神经网络模型。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.setSMVType">
+<code class="descname">setSMVType</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.setSMVType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.setSMVType" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>设置smv模型。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.setX">
+<code class="descname">setX</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.setX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.setX" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>设置X集合</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param newdata:</th><td class="field-body">传入的DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.setY">
+<code class="descname">setY</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.setY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.setY" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>设置Y集合       </dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param se:</th><td class="field-body">传入的序列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.train">
+<code class="descname">train</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.train" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>进行测试</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">returns:</th><td class="field-body">返回train_x和train_y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modelEngineer.ModelEngineer.vertifyTestData">
+<code class="descname">vertifyTestData</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modelEngineer.html#ModelEngineer.vertifyTestData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modelEngineer.ModelEngineer.vertifyTestData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>验证Test数据并返回结果</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">returns:</th><td class="field-body">返回真正的y和预测的y，真正的y在前面</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cmdColor.html">CMDCOLOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmdProcessBar.html">CMDPROCESSBAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drawPlot.html">DRAWPLOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fastResearchData.html">FASTRESEARCHDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indicatorGallery.html">INDICATORGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">MAIN</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MODELENGINEER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalizationGallery.html">NORMALIZATIONGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refreshData.html">REFRESHDATA</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="main.html" title="previous chapter">MAIN</a></li>
+      <li>Next: <a href="normalizationGallery.html" title="next chapter">NORMALIZATIONGALLERY</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/modelEngineer.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,332 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>INDICATORGALLERY &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="MAIN" href="main.html" />
+    <link rel="prev" title="FASTRESEARCHDATA" href="fastResearchData.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-indicatorGallery">
+<span id="indicatorgallery"></span><h1>INDICATORGALLERY<a class="headerlink" href="#module-indicatorGallery" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="indicatorGallery.IndicatorGallery">
+<em class="property">class </em><code class="descclassname">indicatorGallery.</code><code class="descname">IndicatorGallery</code><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery" title="Permalink to this definition">¶</a></dt>
+<dd><p>数据指标库类，用于计算Series列的各种指标</p>
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getAheadAvg">
+<em class="property">static </em><code class="descname">getAheadAvg</code><span class="sig-paren">(</span><em>series</em>, <em>interval=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getAheadAvg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getAheadAvg" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>得到该序列接下来interval个值的平均值，数据自己本身不算在内，如果数据量不够，赋为nan。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param series:</th><td class="field-body">输入序列</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param interval=10:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">时序</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">新的序列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getAheadCal">
+<em class="property">static </em><code class="descname">getAheadCal</code><span class="sig-paren">(</span><em>series</em>, <em>func</em>, <em>interval=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getAheadCal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getAheadCal" title="Permalink to this definition">¶</a></dt>
+<dd><p>得到该序列接下来interval个值，并用给定的函数进行运算，返回运算结果序列。
+数据自己本身不算在内，如果数据量不够，当赋为nan。</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param series:</th><td class="field-body">输入序列</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param func:</th><td class="field-body">给定函数，要求符合 func :: np.Serial -&gt; digit Object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param interval=10:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">时序</td>
+</tr>
+<tr class="field-even field"><th class="field-name">returns:</th><td class="field-body">新的序列</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getAheadCalWithFilter">
+<em class="property">static </em><code class="descname">getAheadCalWithFilter</code><span class="sig-paren">(</span><em>series</em>, <em>calfunc</em>, <em>filterfunc</em>, <em>filterfuncparams</em>, <em>interval=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getAheadCalWithFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getAheadCalWithFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>得到该序列接下来interval个值，先用给定的过滤函数对数据进行过滤，再用给定的运算函数进行运算，返回运算结果序列。
+数据自己本身不算在内，如果数据量不够，当赋为nan。</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param series:</th><td class="field-body">输入序列</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param calfunc:</th><td class="field-body">给定运算函数，要求符合 calfunc :: np.Serial -&gt; digit Object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param filterfunc:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">给定过滤函数，要求符合 filterfun :: filterfuncparams -&gt; index -&gt; True/False，如果返回结果为False，赋为nan</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param filterfuncparams:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">过滤函数的参数，真正传入函数时，参数会加上index（代表处理数据的下标）</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param interval=10:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">时序</td>
+</tr>
+<tr class="field-even field"><th class="field-name">returns:</th><td class="field-body">新的序列</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getAheadData">
+<em class="property">static </em><code class="descname">getAheadData</code><span class="sig-paren">(</span><em>series</em>, <em>interval=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getAheadData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getAheadData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>得到该序列的下interval个时刻序列，即将序列上移interval位。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param series:</th><td class="field-body">输入序列</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param interval=10:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">时序</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">新的序列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getAheadMax">
+<em class="property">static </em><code class="descname">getAheadMax</code><span class="sig-paren">(</span><em>series</em>, <em>interval=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getAheadMax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getAheadMax" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>得到该序列接下来interval个值的最大值，数据自己本身不算在内，如果数据量不够，当赋为nan。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param series:</th><td class="field-body">输入序列</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param interval=10:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">时序</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">新的序列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getAheadMin">
+<em class="property">static </em><code class="descname">getAheadMin</code><span class="sig-paren">(</span><em>series</em>, <em>interval=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getAheadMin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getAheadMin" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>得到该序列接下来interval个值的最小值，数据自己本身不算在内，如果数据量不够，赋为nan。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param series:</th><td class="field-body">输入序列</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param interval=10:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">时序</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">新的序列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getAheadSum">
+<em class="property">static </em><code class="descname">getAheadSum</code><span class="sig-paren">(</span><em>series</em>, <em>interval=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getAheadSum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getAheadSum" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>得到该序列接下来interval个值的总和，数据自己本身不算在内，如果数据量不够，当赋为nan。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param series:</th><td class="field-body">输入序列</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param interval=10:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">时序</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">新的序列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getMACD">
+<em class="property">static </em><code class="descname">getMACD</code><span class="sig-paren">(</span><em>series</em>, <em>short=12</em>, <em>llong=26</em>, <em>diff=9</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getMACD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getMACD" title="Permalink to this definition">¶</a></dt>
+<dd><p>计算该列MACD的值。
+MACD[i + 1] = 2 * a * (emashort[i + 1] - emalong[i + 1] - MACD[i]) - MACD[i]</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param short=12:</th><td class="field-body">short ema的a值，一般为12</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param llong=26:</th><td class="field-body">long ema的a值，一般为26</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param diff=9:</th><td class="field-body">diff的a值，一般为9</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="indicatorGallery.IndicatorGallery.getNext">
+<em class="property">static </em><code class="descname">getNext</code><span class="sig-paren">(</span><em>series</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/indicatorGallery.html#IndicatorGallery.getNext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#indicatorGallery.IndicatorGallery.getNext" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>得到该序列的下一个时刻序列，即将序列上移一位。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param series:</th><td class="field-body">输入序列</td>
+</tr>
+<tr class="field-even field"><th class="field-name">returns:</th><td class="field-body">新的序列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cmdColor.html">CMDCOLOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmdProcessBar.html">CMDPROCESSBAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drawPlot.html">DRAWPLOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fastResearchData.html">FASTRESEARCHDATA</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">INDICATORGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">MAIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelEngineer.html">MODELENGINEER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalizationGallery.html">NORMALIZATIONGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refreshData.html">REFRESHDATA</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="fastResearchData.html" title="previous chapter">FASTRESEARCHDATA</a></li>
+      <li>Next: <a href="main.html" title="next chapter">MAIN</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/indicatorGallery.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -39,42 +39,215 @@
           <div class="body" role="main">
             
   <h1>Source code for main</h1><div class="highlight"><pre>
-<span></span><span class="c1">#coding=utf-8</span>
-<span class="c1"># main文档</span>
+<span></span><span class="ch">#!/usr/bin/env</span>
+<span class="c1"># -*- coding: UTF-8 -*- </span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;hza&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s1">&#39;2018-1-28 18:54&#39;</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span> 
-<span class="kn">from</span> <span class="nn">mymodel</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">fastResearchData</span> <span class="k">import</span> <span class="n">FastResearchData</span>
+<span class="kn">from</span> <span class="nn">indicatorGallery</span> <span class="k">import</span> <span class="n">IndicatorGallery</span>
+<span class="kn">from</span> <span class="nn">refreshData</span> <span class="k">import</span> <span class="n">RefreshData</span>
+<span class="kn">from</span> <span class="nn">normalizationGallery</span> <span class="k">import</span> <span class="n">NormalizationGallery</span>
+<span class="kn">from</span> <span class="nn">modelEngineer</span> <span class="k">import</span> <span class="n">ModelEngineer</span>
+<span class="kn">from</span> <span class="nn">drawPlot</span> <span class="k">import</span> <span class="n">DrawPlot</span>
+<span class="kn">from</span> <span class="nn">cmdColor</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">cmdProcessBar</span> <span class="k">import</span> <span class="n">CMDProcessBar</span>
 
-<div class="viewcode-block" id="myTest"><a class="viewcode-back" href="../main.html#main.myTest">[docs]</a><span class="k">def</span> <span class="nf">myTest</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    用于测试使用</span>
-<span class="sd">    &quot;&quot;&quot;</span> 
-    <span class="c1"># 测试ModelEngineer类</span>
-    <span class="n">me</span> <span class="o">=</span> <span class="n">ModelEngineer</span><span class="p">()</span>
-    <span class="n">me</span><span class="o">.</span><span class="n">setLinearRegression</span><span class="p">()</span>
-    <span class="n">mydata</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">getData</span><span class="p">()</span>
-    <span class="n">mydata</span><span class="o">.</span><span class="n">loadFromCSV</span><span class="p">(</span><span class="s1">&#39;000001.csv&#39;</span><span class="p">)</span>
-    <span class="c1">#print mydata.getDataFrame()</span>
-    <span class="c1">#print mydata</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+
+<div class="viewcode-block" id="setArgParse"><a class="viewcode-back" href="../main.html#main.setArgParse">[docs]</a><span class="k">def</span> <span class="nf">setArgParse</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    设置argparse</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;The program using given data to predict target data.&#39;</span><span class="p">)</span>
+    <span class="c1"># 必选参数</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;beginstockcode&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The begin stock</span><span class="se">\&#39;</span><span class="s1">s code, must be int type&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;endstockcode&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The end stock</span><span class="se">\&#39;</span><span class="s1">s code, must be int type&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;columnname&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The name of column that you want to predict&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+    <span class="p">)</span>
+    <span class="c1"># 可选参数</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-d&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--dirpath&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Given data folder path, if not set, the path is </span><span class="se">\&#39;</span><span class="s1">../data/5min/&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;../data/5min/&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-r&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--reflesh&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Whether reflesh stock data&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-s&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--smallrelevance&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The smallest relevance, if the relevance between tag in X and y is small than it, it will be deleted&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-b&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--bigrelevance&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The bigest relevance, if the relevance between tag in X and y is big than it, it will be deleted&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-m&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--modelengineer&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The model engineer you want to select&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;linear regression&#39;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;linear regression&#39;</span><span class="p">,</span> <span class="s1">&#39;neural netword&#39;</span><span class="p">,</span> <span class="s1">&#39;svm&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-i&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--interval&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The interval you want to predict&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></div>
     
-    <span class="c1"># 修改数据</span>
-    <span class="n">mydata</span><span class="o">.</span><span class="n">filterDataByNames</span><span class="p">([</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;p_change&#39;</span><span class="p">,</span> <span class="s1">&#39;turnover&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">])</span>
-    <span class="n">mydata</span><span class="o">.</span><span class="n">setMACD</span><span class="p">()</span>
-    <span class="n">mydata</span><span class="o">.</span><span class="n">setAvgPrc</span><span class="p">(</span><span class="n">columnsName</span><span class="o">=</span><span class="s1">&#39;close&#39;</span><span class="p">)</span>
-    <span class="n">mydata</span><span class="o">.</span><span class="n">shiftColumn</span><span class="p">(</span><span class="n">numbers</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-    
-    <span class="c1">#dn = DataNormal()</span>
-    <span class="c1">#normaldata = dn.setNormalizer(mydata.getDataFrame())</span>
-    
-    <span class="c1"># 进行模拟</span>
-    <span class="n">me</span><span class="o">.</span><span class="n">setLinearRegression</span><span class="p">()</span>
-    <span class="c1">#print mydata.getDataFrame()</span>
-    <span class="n">me</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-    <span class="n">me</span><span class="o">.</span><span class="n">evaluateOutSample</span><span class="p">()</span>
-    <span class="n">me</span><span class="o">.</span><span class="n">crossTest</span><span class="p">()</span></div>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">myTest</span><span class="p">()</span>
+    <span class="c1"># CMD颜色</span>
+    <span class="n">lintcmdcolor</span> <span class="o">=</span> <span class="n">CMDColor</span><span class="p">(</span><span class="n">FOREGROUND_RED</span><span class="p">)</span>
+    <span class="n">datacmdcolor</span> <span class="o">=</span> <span class="n">CMDColor</span><span class="p">(</span><span class="n">FOREGROUND_DARKSKYBLUE</span><span class="p">)</span>
+
+    <span class="c1"># 设置参数</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">setArgParse</span><span class="p">()</span>
+
+    <span class="c1"># STEP1:导入数据</span>
+    <span class="n">fastdata</span> <span class="o">=</span> <span class="n">FastResearchData</span><span class="p">()</span>
+    <span class="n">processbar</span> <span class="o">=</span> <span class="n">CMDProcessBar</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">endstockcode</span> <span class="o">-</span> <span class="n">args</span><span class="o">.</span><span class="n">beginstockcode</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">beginstockcode</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">endstockcode</span><span class="p">):</span>
+        <span class="n">processbar</span><span class="o">.</span><span class="n">showProcess</span><span class="p">()</span>
+        <span class="n">fastdata</span><span class="o">.</span><span class="n">addDataFromCSV</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%06d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">index</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+    <span class="n">processbar</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;Load Data Done!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fastdata</span><span class="o">.</span><span class="n">getDatadict</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;Don</span><span class="se">\&#39;</span><span class="s1">t load any data! Please check the dirpath and stockcodes:&#39;</span>
+        <span class="nb">print</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">dirpath = &#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">dirpath</span>
+        <span class="nb">print</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">stockcodes is [&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%06d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="o">.</span><span class="n">beginstockcode</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%06d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="o">.</span><span class="n">endstockcode</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    
+
+    <span class="n">lintcmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="s1">&#39;Load Stock Data Finish!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s1">&#39;Load stock</span><span class="se">\&#39;</span><span class="s1">s num is &#39;</span><span class="p">,</span>
+    <span class="n">datacmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fastdata</span><span class="o">.</span><span class="n">getDatadict</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+    <span class="c1"># 如果预测数据不准确，则输入预测数据</span>
+    <span class="n">predictcolumn</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">columnname</span>
+    <span class="k">if</span> <span class="n">predictcolumn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">fastdata</span><span class="o">.</span><span class="n">getDatadict</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="s1">&#39;The columns</span><span class="se">\&#39;</span><span class="s1"> name list as follow:&#39;</span>
+        <span class="nb">print</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">fastdata</span><span class="o">.</span><span class="n">getDatadict</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="s1">&#39;What columns do you want to predict?&#39;</span><span class="p">,</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">predictcolumn</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">predictcolumn</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">fastdata</span><span class="o">.</span><span class="n">getDatadict</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="nb">print</span> <span class="s1">&#39;Your input is wrong, Please choice a column:&#39;</span><span class="p">,</span>
+
+    <span class="c1"># STEP2:数据筛选，求出Y值</span>
+    <span class="n">concatdf</span> <span class="o">=</span> <span class="n">fastdata</span><span class="o">.</span><span class="n">concatAllStockData</span><span class="p">()</span>
+    <span class="c1"># 进行数据清洗，如果预测的数据时间不对，会被赋值成nan</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">reflesh</span><span class="p">:</span>
+        <span class="n">calfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ls</span> <span class="p">:</span> <span class="n">ls</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">filfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">df</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inv</span><span class="p">,</span> <span class="n">ind</span> <span class="p">:</span> \
+            <span class="nb">int</span><span class="p">((</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">date</span><span class="p">[</span><span class="n">ind</span> <span class="o">+</span> <span class="n">inv</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">date</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span> <span class="o">/</span> <span class="mi">300</span> <span class="o">==</span> <span class="n">inv</span>
+        <span class="n">concatdf</span><span class="p">[</span><span class="n">predictcolumn</span> <span class="o">+</span> <span class="s1">&#39;predict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadCalWithFilter</span><span class="p">(</span>
+            <span class="n">concatdf</span><span class="p">[</span><span class="n">predictcolumn</span><span class="p">],</span>
+            <span class="n">calfunc</span><span class="p">,</span>
+            <span class="n">filfunc</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">concatdf</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">interval</span><span class="p">],</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">interval</span>
+        <span class="p">)</span>
+        <span class="n">lintcmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="s1">&#39;Clean Stock Data Finish!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="s1">&#39;Stock data</span><span class="se">\&#39;</span><span class="s1">s size is &#39;</span><span class="p">,</span>
+        <span class="n">datacmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">concatdf</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># 普通的前移数据</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">concatdf</span><span class="p">[</span><span class="n">predictcolumn</span> <span class="o">+</span> <span class="s1">&#39;predict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadData</span><span class="p">(</span><span class="n">concatdf</span><span class="p">[</span><span class="n">predictcolumn</span><span class="p">],</span> <span class="n">args</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
+    
+    <span class="c1"># STEP3:数据刷新，去除含有nan的数据</span>
+    <span class="n">concatdf</span> <span class="o">=</span> <span class="n">RefreshData</span><span class="o">.</span><span class="n">deleteRowWithNan</span><span class="p">(</span><span class="n">concatdf</span><span class="p">)</span>
+
+
+    <span class="n">lintcmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="s1">&#39;Refresh Data Finish!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s1">&#39;Remain stock data</span><span class="se">\&#39;</span><span class="s1">s size is &#39;</span><span class="p">,</span>
+    <span class="n">datacmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">concatdf</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+    <span class="c1"># STEP4:去除相关性太高或太低的列，得到正确X</span>
+    <span class="k">del</span> <span class="n">concatdf</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">concatdf</span><span class="p">[</span><span class="s1">&#39;stockname&#39;</span><span class="p">]</span>
+    <span class="n">othercolumn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">concatdf</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="n">predictcolumn</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">othercolumn</span><span class="p">:</span>
+        <span class="n">corrvalue</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">concatdf</span><span class="p">[</span><span class="n">predictcolumn</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">concatdf</span><span class="p">[</span><span class="n">column</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">corrvalue</span> <span class="o">&lt;</span> <span class="n">args</span><span class="o">.</span><span class="n">smallrelevance</span> <span class="ow">or</span> <span class="n">corrvalue</span> <span class="o">&gt;</span> <span class="n">args</span><span class="o">.</span><span class="n">bigrelevance</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">concatdf</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+    
+
+    <span class="n">lintcmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="s1">&#39;Set X and Y Finish!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s1">&#39;X</span><span class="se">\&#39;</span><span class="s1">s columns is &#39;</span><span class="p">,</span>
+    <span class="n">datacmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">othercolumn</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s1">&#39;Y</span><span class="se">\&#39;</span><span class="s1">s column is &#39;</span><span class="p">,</span>
+    <span class="n">datacmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">predictcolumn</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+    <span class="c1"># STEP5:建立模型</span>
+    <span class="n">othercolumn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">concatdf</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="n">predictcolumn</span><span class="p">]))</span>
+    <span class="n">me</span> <span class="o">=</span> <span class="n">ModelEngineer</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">modelengineer</span><span class="p">)</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">setX</span><span class="p">(</span><span class="n">concatdf</span><span class="p">[</span><span class="n">othercolumn</span><span class="p">])</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">setY</span><span class="p">(</span><span class="n">concatdf</span><span class="p">[</span><span class="n">predictcolumn</span><span class="p">])</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    
+
+    <span class="n">lintcmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="s1">&#39;Build model finish!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s1">&#39;The model name is &#39;</span><span class="p">,</span>
+    <span class="n">datacmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">modelengineer</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+    <span class="c1"># STEP6:随机选取一只股票进行模型测试</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+    <span class="n">randomnum</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">999999</span><span class="p">)</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%06d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">randomnum</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span><span class="p">):</span>
+        <span class="n">randomnum</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">999999</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%06d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">randomnum</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+    <span class="n">X</span><span class="p">[</span><span class="n">predictcolumn</span> <span class="o">+</span> <span class="s1">&#39;predict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadData</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">predictcolumn</span><span class="p">],</span> <span class="n">args</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">RefreshData</span><span class="o">.</span><span class="n">deleteRowWithNan</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">real_y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">predictcolumn</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;real&#39;</span><span class="p">)</span>
+    <span class="n">predict_y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">me</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">othercolumn</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;predict&#39;</span><span class="p">)</span>
+
+
+    <span class="n">lintcmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="s1">&#39;Test Finish!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s1">&#39;The tested stock is &#39;</span><span class="p">,</span>
+    <span class="n">datacmdcolor</span><span class="o">.</span><span class="n">printWithColor</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%06d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">randomnum</span><span class="p">)</span>
+
+
+    <span class="c1"># STEP7:显示预测结果图</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="n">DrawPlot</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%06d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">randomnum</span> <span class="o">+</span> <span class="s1">&#39; stock predict plot&#39;</span><span class="p">)</span>
+    <span class="n">dp</span><span class="o">.</span><span class="n">drawLinePlot</span><span class="p">(</span><span class="n">real_y</span><span class="p">,</span> <span class="n">predict_y</span><span class="p">)</span>
+    <span class="n">dp</span><span class="o">.</span><span class="n">drawJointPlot</span><span class="p">(</span><span class="n">real_y</span><span class="p">,</span> <span class="n">predict_y</span><span class="p">)</span>
+    <span class="n">dp</span><span class="o">.</span><span class="n">drawDensityCurvePlot</span><span class="p">(</span><span class="n">real_y</span> <span class="o">-</span> <span class="n">predict_y</span><span class="p">)</span>
 </pre></div>
 
           </div>
@@ -94,9 +267,15 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../cmdColor.html">CMDCOLOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cmdProcessBar.html">CMDPROCESSBAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drawPlot.html">DRAWPLOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fastResearchData.html">FASTRESEARCHDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indicatorGallery.html">INDICATORGALLERY</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../main.html">MAIN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mydata.html">MYDATA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mymodel.html">MYMODEL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modelEngineer.html">MODELENGINEER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../normalizationGallery.html">NORMALIZATIONGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../refreshData.html">REFRESHDATA</a></li>
 </ul>
 
 <div class="relations">

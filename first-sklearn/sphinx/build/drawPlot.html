@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>DRAWPLOT &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FASTRESEARCHDATA" href="fastResearchData.html" />
+    <link rel="prev" title="CMDPROCESSBAR" href="cmdProcessBar.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-drawPlot">
+<span id="drawplot"></span><h1>DRAWPLOT<a class="headerlink" href="#module-drawPlot" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="drawPlot.DrawPlot">
+<em class="property">class </em><code class="descclassname">drawPlot.</code><code class="descname">DrawPlot</code><span class="sig-paren">(</span><em>title='Plot', lineweight=0.5, linecolors=['navy', 'red', 'green']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/drawPlot.html#DrawPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#drawPlot.DrawPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>用于画图表的类</p>
+<dl class="method">
+<dt id="drawPlot.DrawPlot.drawDensityCurvePlot">
+<code class="descname">drawDensityCurvePlot</code><span class="sig-paren">(</span><em>se</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/drawPlot.html#DrawPlot.drawDensityCurvePlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#drawPlot.DrawPlot.drawDensityCurvePlot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>画密度曲线图，表示序列的密度曲线（即直方图）</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param se:</th><td class="field-body">序列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="drawPlot.DrawPlot.drawJointPlot">
+<code class="descname">drawJointPlot</code><span class="sig-paren">(</span><em>se1</em>, <em>se2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/drawPlot.html#DrawPlot.drawJointPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#drawPlot.DrawPlot.drawJointPlot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>画线性相关图，表示序列1和序列2的相关性</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param se1:</th><td class="field-body">序列1</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param se2:</th><td class="field-body">序列2</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="drawPlot.DrawPlot.drawLinePlot">
+<code class="descname">drawLinePlot</code><span class="sig-paren">(</span><em>se1</em>, <em>se2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/drawPlot.html#DrawPlot.drawLinePlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#drawPlot.DrawPlot.drawLinePlot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>画线性图，图中包含序列1的value值，序列2的value值，序列1-序列2的value值，用于比较。</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body">类变量本身</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param se1:</th><td class="field-body">序列1</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param se2:</th><td class="field-body">序列2</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cmdColor.html">CMDCOLOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmdProcessBar.html">CMDPROCESSBAR</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DRAWPLOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fastResearchData.html">FASTRESEARCHDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indicatorGallery.html">INDICATORGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">MAIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelEngineer.html">MODELENGINEER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalizationGallery.html">NORMALIZATIONGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refreshData.html">REFRESHDATA</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="cmdProcessBar.html" title="previous chapter">CMDPROCESSBAR</a></li>
+      <li>Next: <a href="fastResearchData.html" title="next chapter">FASTRESEARCHDATA</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/drawPlot.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

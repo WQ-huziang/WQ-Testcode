@@ -1,6 +1,6 @@
-MYDATA
-======
-.. automodule:: mydata
+CMDPROCESSBAR
+=============
+.. automodule:: cmdProcessBar
 	:members:
 
 * :ref:`genindex`

@@ -12,10 +12,15 @@ API
     :maxdepth: 2
     :caption: Contents:
 
+    cmdColor
+    cmdProcessBar
+    drawPlot
+    fastResearchData
+    indicatorGallery
     main
-    mydata
-    mymodel
-
+    modelEngineer
+    normalizationGallery
+    refreshData
 
 Indices and tables
 ==================

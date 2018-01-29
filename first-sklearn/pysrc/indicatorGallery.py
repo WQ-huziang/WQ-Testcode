@@ -5,6 +5,7 @@ __date__ = '2018-1-26 15:27'
 
 import numpy as np
 import pandas as pd
+from cmdProcessBar import CMDProcessBar
 
 class IndicatorGallery:
     '数据指标库类，用于计算Series列的各种指标'
@@ -105,7 +106,11 @@ class IndicatorGallery:
             :returns: 新的序列
         """   
         datalist = []
+        if len(series) > 1000:
+            processbar = CMDProcessBar(len(series))
         for index in range(len(series)):
+            if len(series) > 1000:
+                processbar.showProcess()
             if index + interval + 1 >= len(series):
                 datalist.append(np.nan)
                 continue
@@ -113,6 +118,8 @@ class IndicatorGallery:
                 datalist.append(calfunc(list(series[index + 1:index + interval + 1])))
             else:
                 datalist.append(np.nan)
+        if len(series) > 1000:
+            processbar.close('Calculator Done!\n')
         return pd.Series(datalist)
 
     @staticmethod

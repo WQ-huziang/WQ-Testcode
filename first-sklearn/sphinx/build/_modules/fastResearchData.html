@@ -1,0 +1,256 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>fastResearchData &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for fastResearchData</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env</span>
+<span class="c1"># -*- coding: UTF-8 -*- </span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;hza&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s1">&#39;2018-1-27 9:13&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="k">import</span> <span class="n">SVC</span>  
+<span class="kn">from</span> <span class="nn">cmdProcessBar</span> <span class="k">import</span> <span class="n">CMDProcessBar</span>
+
+<div class="viewcode-block" id="FastResearchData"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData">[docs]</a><span class="k">class</span> <span class="nc">FastResearchData</span><span class="p">:</span>
+    <span class="s1">&#39;FastResearchData类，使用dict数据结构，可进行数据存储&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirpath</span><span class="o">=</span><span class="s1">&#39;../data/5min/&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        类构造函数</span>
+<span class="sd">            :param self: 类变量本身 </span>
+<span class="sd">            :param dirpath=&#39;../data/5min/&#39;:  数据存放目录的路径</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">=</span> <span class="n">dirpath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="FastResearchData.addDataFromKeyValue"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.addDataFromKeyValue">[docs]</a>    <span class="k">def</span> <span class="nf">addDataFromKeyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stockname</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        载入数据，传入Key值和Value值，Value值为DataFrame</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param stockname: 股票名称</span>
+<span class="sd">            :param df: 传入的DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="c1">#print &quot;df is not DataFrame!&quot;</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">stockname</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FastResearchData.addDataFromCSV"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.addDataFromCSV">[docs]</a>    <span class="k">def</span> <span class="nf">addDataFromCSV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取指定CSV文件中的数据，键值设置为文件名</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param filename: csv数据文件路径，包含后缀名</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="c1">#print &quot;Not exist &quot; + filename +&quot; file!&quot;</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="p">[</span><span class="n">filename</span><span class="p">[</span><span class="n">filename</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">filename</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)]]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FastResearchData.delDataByStockname"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.delDataByStockname">[docs]</a>    <span class="k">def</span> <span class="nf">delDataByStockname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stockname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        通过stockname删除指定数据</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param stockname: 股票名称</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">stockname</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="FastResearchData.concatAllStockData"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.concatAllStockData">[docs]</a>    <span class="k">def</span> <span class="nf">concatAllStockData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将所有的DataFrame连接，然后返回，新的DataFrame增加一行stockname，是每个股票的stockname</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :returns: 所有连接的DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="c1"># 新建dataframe，列多一行</span>
+        <span class="n">tempstockdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="o">.</span><span class="n">items</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">allstockdata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;stockname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">tempstockdata</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">processbar</span> <span class="o">=</span> <span class="n">CMDProcessBar</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="c1"># 循环加入</span>
+        <span class="k">for</span> <span class="n">stockname</span><span class="p">,</span> <span class="n">dataframe</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+                <span class="n">processbar</span><span class="o">.</span><span class="n">showProcess</span><span class="p">()</span>
+            <span class="n">appenddataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">stockname</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;stockname&#39;</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">allstockdata</span> <span class="o">=</span> <span class="n">allstockdata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appenddataframe</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">processbar</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;Concat Done!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># 重新排序，重新设置下标</span>
+        <span class="n">allstockdata</span> <span class="o">=</span> <span class="n">allstockdata</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">allstockdata</span> <span class="o">=</span> <span class="n">allstockdata</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">allstockdata</span></div>
+
+<div class="viewcode-block" id="FastResearchData.setDatadict"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.setDatadict">[docs]</a>    <span class="k">def</span> <span class="nf">setDatadict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datadict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        docstring here</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param datadict: 传入的字典</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datadict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;datadict is not a dict!&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span> <span class="o">=</span> <span class="n">datadict</span></div>
+
+<div class="viewcode-block" id="FastResearchData.getDatadict"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.getDatadict">[docs]</a>    <span class="k">def</span> <span class="nf">getDatadict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到结构里储存的字典数据</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :returns: 类储存的股票数据</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span></div>
+
+<div class="viewcode-block" id="FastResearchData.getDataFrameByStockname"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.getDataFrameByStockname">[docs]</a>    <span class="k">def</span> <span class="nf">getDataFrameByStockname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stockname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        通过股票名称得到data属性，可能为None</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param stockname: 股票名称</span>
+<span class="sd">            :returns: 本身储存的DataFream</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stockdata</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">stockname</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="FastResearchData.setDirPath"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.setDirPath">[docs]</a>    <span class="k">def</span> <span class="nf">setDirPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置文件夹路径</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param dirpath: 类内部的dirpath</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span> <span class="o">=</span> <span class="n">dirpath</span></div>
+
+<div class="viewcode-block" id="FastResearchData.getDirPath"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.getDirPath">[docs]</a>    <span class="k">def</span> <span class="nf">getDirPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到类变量dirpath</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :returns: 类内部dirpath</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span></div>
+
+<div class="viewcode-block" id="FastResearchData.getAllFilePath"><a class="viewcode-back" href="../fastResearchData.html#fastResearchData.FastResearchData.getAllFilePath">[docs]</a>    <span class="k">def</span> <span class="nf">getAllFilePath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;.csv&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到dirpath路径下的所有.csv文件的相对路径</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param filetype=&#39;,csv&#39;: 文件类型种类，带.</span>
+<span class="sd">            :returns: 所有同类型文件的相对路径</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepathlist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirpath</span><span class="p">):</span>
+            <span class="n">filepathlist</span> <span class="o">+=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">filetype</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">filepathlist</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># 测试FastResearchData类</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">FastResearchData</span><span class="p">()</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">getAllFilePath</span><span class="p">()</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">addDataFromCSV</span><span class="p">(</span><span class="s1">&#39;000001.csv&#39;</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">getDataFrameByStockname</span><span class="p">(</span><span class="s1">&#39;000001&#39;</span><span class="p">)</span>
+    <span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/5min/000002.csv&#39;</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">addDataFromKeyValue</span><span class="p">(</span><span class="s1">&#39;000002&#39;</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">getDataFrameByStockname</span><span class="p">(</span><span class="s1">&#39;000002&#39;</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">concatAllStockData</span><span class="p">()</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">delDataByStockname</span><span class="p">(</span><span class="s1">&#39;000001&#39;</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">getDatadict</span><span class="p">()</span>
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cmdColor.html">CMDCOLOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cmdProcessBar.html">CMDPROCESSBAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drawPlot.html">DRAWPLOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fastResearchData.html">FASTRESEARCHDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indicatorGallery.html">INDICATORGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main.html">MAIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modelEngineer.html">MODELENGINEER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../normalizationGallery.html">NORMALIZATIONGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../refreshData.html">REFRESHDATA</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

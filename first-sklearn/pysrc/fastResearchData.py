@@ -7,6 +7,7 @@ import os
 import pandas as pd
 import numpy as np
 from sklearn.svm import SVC  
+from cmdProcessBar import CMDProcessBar
 
 class FastResearchData:
     'FastResearchData类，使用dict数据结构，可进行数据存储'
@@ -61,10 +62,17 @@ class FastResearchData:
         # 新建dataframe，列多一行
         tempstockdata = self.stockdata.items()[0][1]
         allstockdata = pd.DataFrame(columns=['stockname'] + tempstockdata.columns.tolist())
+        
+        if len(self.stockdata.keys()) > 50:
+            processbar = CMDProcessBar(len(self.stockdata.keys()))
         # 循环加入
         for stockname, dataframe in self.stockdata.items():
+            if len(self.stockdata.keys()) > 50:
+                processbar.showProcess()
             appenddataframe = pd.concat([dataframe, pd.Series(np.full(len(dataframe), int(stockname)), name='stockname')], axis=1)
             allstockdata = allstockdata.append(appenddataframe, ignore_index=True)
+        if len(self.stockdata.keys()) > 50:
+            processbar.close('Concat Done!\n')
         # 重新排序，重新设置下标
         allstockdata = allstockdata.sort_index(ascending=True)
         allstockdata = allstockdata.reset_index(drop=True)

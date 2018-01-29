@@ -1,0 +1,206 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cmdColor &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cmdColor</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env</span>
+<span class="c1"># -*- coding: UTF-8 -*- </span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;hza&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s1">&#39;2018-1-29 15:11&#39;</span>
+
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># stdin, stdout, stderr 三种模式</span>
+<span class="n">STD_INPUT_HANDLE</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+<span class="n">STD_OUTPUT_HANDLE</span> <span class="o">=</span> <span class="o">-</span><span class="mi">11</span>
+<span class="n">STD_ERROR_HANDLE</span> <span class="o">=</span> <span class="o">-</span><span class="mi">12</span>
+
+<span class="c1"># Windows CMD命令行 字体颜色定义 text colors</span>
+<span class="n">FOREGROUND_BLACK</span> <span class="o">=</span> <span class="mh">0x00</span> <span class="c1"># black.</span>
+<span class="n">FOREGROUND_DARKBLUE</span> <span class="o">=</span> <span class="mh">0x01</span> <span class="c1"># dark blue.</span>
+<span class="n">FOREGROUND_DARKGREEN</span> <span class="o">=</span> <span class="mh">0x02</span> <span class="c1"># dark green.</span>
+<span class="n">FOREGROUND_DARKSKYBLUE</span> <span class="o">=</span> <span class="mh">0x03</span> <span class="c1"># dark skyblue.</span>
+<span class="n">FOREGROUND_DARKRED</span> <span class="o">=</span> <span class="mh">0x04</span> <span class="c1"># dark red.</span>
+<span class="n">FOREGROUND_DARKPINK</span> <span class="o">=</span> <span class="mh">0x05</span> <span class="c1"># dark pink.</span>
+<span class="n">FOREGROUND_DARKYELLOW</span> <span class="o">=</span> <span class="mh">0x06</span> <span class="c1"># dark yellow.</span>
+<span class="n">FOREGROUND_DARKWHITE</span> <span class="o">=</span> <span class="mh">0x07</span> <span class="c1"># dark white.</span>
+<span class="n">FOREGROUND_DARKGRAY</span> <span class="o">=</span> <span class="mh">0x08</span> <span class="c1"># dark gray.</span>
+<span class="n">FOREGROUND_BLUE</span> <span class="o">=</span> <span class="mh">0x09</span> <span class="c1"># blue.</span>
+<span class="n">FOREGROUND_GREEN</span> <span class="o">=</span> <span class="mh">0x0a</span> <span class="c1"># green.</span>
+<span class="n">FOREGROUND_SKYBLUE</span> <span class="o">=</span> <span class="mh">0x0b</span> <span class="c1"># skyblue.</span>
+<span class="n">FOREGROUND_RED</span> <span class="o">=</span> <span class="mh">0x0c</span> <span class="c1"># red.</span>
+<span class="n">FOREGROUND_PINK</span> <span class="o">=</span> <span class="mh">0x0d</span> <span class="c1"># pink.</span>
+<span class="n">FOREGROUND_YELLOW</span> <span class="o">=</span> <span class="mh">0x0e</span> <span class="c1"># yellow.</span>
+<span class="n">FOREGROUND_WHITE</span> <span class="o">=</span> <span class="mh">0x0f</span> <span class="c1"># white.</span>
+ 
+<span class="c1"># Windows CMD命令行 背景颜色定义 background colors</span>
+<span class="n">BACKGROUND_BLACK</span> <span class="o">=</span> <span class="mh">0x00</span> <span class="c1"># black</span>
+<span class="n">BACKGROUND_BLUE</span> <span class="o">=</span> <span class="mh">0x10</span> <span class="c1"># dark blue.</span>
+<span class="n">BACKGROUND_GREEN</span> <span class="o">=</span> <span class="mh">0x20</span> <span class="c1"># dark green.</span>
+<span class="n">BACKGROUND_DARKSKYBLUE</span> <span class="o">=</span> <span class="mh">0x30</span> <span class="c1"># dark skyblue.</span>
+<span class="n">BACKGROUND_DARKRED</span> <span class="o">=</span> <span class="mh">0x40</span> <span class="c1"># dark red.</span>
+<span class="n">BACKGROUND_DARKPINK</span> <span class="o">=</span> <span class="mh">0x50</span> <span class="c1"># dark pink.</span>
+<span class="n">BACKGROUND_DARKYELLOW</span> <span class="o">=</span> <span class="mh">0x60</span> <span class="c1"># dark yellow.</span>
+<span class="n">BACKGROUND_DARKWHITE</span> <span class="o">=</span> <span class="mh">0x70</span> <span class="c1"># dark white.</span>
+<span class="n">BACKGROUND_DARKGRAY</span> <span class="o">=</span> <span class="mh">0x80</span> <span class="c1"># dark gray.</span>
+<span class="n">BACKGROUND_BLUE</span> <span class="o">=</span> <span class="mh">0x90</span> <span class="c1"># blue.</span>
+<span class="n">BACKGROUND_GREEN</span> <span class="o">=</span> <span class="mh">0xa0</span> <span class="c1"># green.</span>
+<span class="n">BACKGROUND_SKYBLUE</span> <span class="o">=</span> <span class="mh">0xb0</span> <span class="c1"># skyblue.</span>
+<span class="n">BACKGROUND_RED</span> <span class="o">=</span> <span class="mh">0xc0</span> <span class="c1"># red.</span>
+<span class="n">BACKGROUND_PINK</span> <span class="o">=</span> <span class="mh">0xd0</span> <span class="c1"># pink.</span>
+<span class="n">BACKGROUND_YELLOW</span> <span class="o">=</span> <span class="mh">0xe0</span> <span class="c1"># yellow.</span>
+<span class="n">BACKGROUND_WHITE</span> <span class="o">=</span> <span class="mh">0xf0</span> <span class="c1"># white.</span>
+
+<span class="c1"># 标准命令行</span>
+<span class="n">stdinhandle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetStdHandle</span><span class="p">(</span><span class="n">STD_INPUT_HANDLE</span><span class="p">)</span>
+<span class="n">stdouthandle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetStdHandle</span><span class="p">(</span><span class="n">STD_OUTPUT_HANDLE</span><span class="p">)</span>
+<span class="n">stderrhandle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetStdHandle</span><span class="p">(</span><span class="n">STD_ERROR_HANDLE</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CMDColor"><a class="viewcode-back" href="../cmdColor.html#cmdColor.CMDColor">[docs]</a><span class="k">class</span> <span class="nc">CMDColor</span><span class="p">:</span>
+    <span class="s1">&#39;设置cmd命令行颜色&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        构造函数</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param color: 颜色</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
+
+<div class="viewcode-block" id="CMDColor.setCmdTextColor"><a class="viewcode-back" href="../cmdColor.html#cmdColor.CMDColor.setCmdTextColor">[docs]</a>    <span class="k">def</span> <span class="nf">setCmdTextColor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="n">stdouthandle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置颜色，可以同时设置字体和背景颜色，通过|</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param color: 颜色</span>
+<span class="sd">            :param handle=stdouthandle: 输入输出接口</span>
+<span class="sd">            :returns: 是否成功</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">SetConsoleTextAttribute</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CMDColor.resetColor"><a class="viewcode-back" href="../cmdColor.html#cmdColor.CMDColor.resetColor">[docs]</a>    <span class="k">def</span> <span class="nf">resetColor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        回复原先颜色</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="n">CMDColor</span><span class="o">.</span><span class="n">setCmdTextColor</span><span class="p">(</span><span class="n">FOREGROUND_DARKWHITE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CMDColor.printWithColor"><a class="viewcode-back" href="../cmdColor.html#cmdColor.CMDColor.printWithColor">[docs]</a>    <span class="k">def</span> <span class="nf">printWithColor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mess</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        输出颜色</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param mess: 输出信息</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCmdTextColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mess</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetColor</span><span class="p">()</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">CMDColor</span><span class="o">.</span><span class="n">setCmdTextColor</span><span class="p">(</span><span class="n">FOREGROUND_RED</span> <span class="o">|</span> <span class="n">BACKGROUND_YELLOW</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s1">&#39;I am BLUE???&#39;</span>
+    <span class="nb">print</span> <span class="s1">&#39;REALLY???&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">resetColor</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="s1">&#39;goback?&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cmdColor.html">CMDCOLOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cmdProcessBar.html">CMDPROCESSBAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drawPlot.html">DRAWPLOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fastResearchData.html">FASTRESEARCHDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indicatorGallery.html">INDICATORGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main.html">MAIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modelEngineer.html">MODELENGINEER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../normalizationGallery.html">NORMALIZATIONGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../refreshData.html">REFRESHDATA</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

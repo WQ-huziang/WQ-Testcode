@@ -1,0 +1,268 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>indicatorGallery &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for indicatorGallery</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env</span>
+<span class="c1"># -*- coding: UTF-8 -*- </span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;hza&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s1">&#39;2018-1-26 15:27&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">cmdProcessBar</span> <span class="k">import</span> <span class="n">CMDProcessBar</span>
+
+<div class="viewcode-block" id="IndicatorGallery"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery">[docs]</a><span class="k">class</span> <span class="nc">IndicatorGallery</span><span class="p">:</span>
+    <span class="s1">&#39;数据指标库类，用于计算Series列的各种指标&#39;</span>
+    <span class="s1">&#39;此类为静态类&#39;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_calEMA</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        辅助函数，计算EMA的值。</span>
+<span class="sd">            :param N: 第N项</span>
+<span class="sd">            :param a: close_price_today</span>
+<span class="sd">            :param b: ema_yesterday</span>
+<span class="sd">            :returns: EMA值</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+
+<div class="viewcode-block" id="IndicatorGallery.getNext"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getNext">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getNext</span><span class="p">(</span><span class="n">series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到该序列的下一个时刻序列，即将序列上移一位。</span>
+<span class="sd">            :param series: 输入序列</span>
+<span class="sd">            :returns: 新的序列</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadData</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndicatorGallery.getAheadData"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getAheadData">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getAheadData</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到该序列的下interval个时刻序列，即将序列上移interval位。</span>
+<span class="sd">            :param series: 输入序列</span>
+<span class="sd">            :param interval=10: 时序</span>
+<span class="sd">            :returns: 新的序列 </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">series</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="n">interval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndicatorGallery.getAheadAvg"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getAheadAvg">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getAheadAvg</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到该序列接下来interval个值的平均值，数据自己本身不算在内，如果数据量不够，赋为nan。</span>
+<span class="sd">            :param series: 输入序列</span>
+<span class="sd">            :param interval=10: 时序 </span>
+<span class="sd">            :returns: 新的序列 </span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadCal</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndicatorGallery.getAheadMin"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getAheadMin">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getAheadMin</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到该序列接下来interval个值的最小值，数据自己本身不算在内，如果数据量不够，赋为nan。</span>
+<span class="sd">            :param series: 输入序列</span>
+<span class="sd">            :param interval=10: 时序 </span>
+<span class="sd">            :returns: 新的序列 </span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadCal</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndicatorGallery.getAheadMax"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getAheadMax">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getAheadMax</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到该序列接下来interval个值的最大值，数据自己本身不算在内，如果数据量不够，当赋为nan。</span>
+<span class="sd">            :param series: 输入序列</span>
+<span class="sd">            :param interval=10: 时序 </span>
+<span class="sd">            :returns: 新的序列 </span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadCal</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndicatorGallery.getAheadSum"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getAheadSum">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getAheadSum</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到该序列接下来interval个值的总和，数据自己本身不算在内，如果数据量不够，当赋为nan。</span>
+<span class="sd">            :param series: 输入序列</span>
+<span class="sd">            :param interval=10: 时序 </span>
+<span class="sd">            :returns: 新的序列 </span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="k">return</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadCal</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndicatorGallery.getAheadCal"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getAheadCal">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getAheadCal</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到该序列接下来interval个值，并用给定的函数进行运算，返回运算结果序列。</span>
+<span class="sd">        数据自己本身不算在内，如果数据量不够，当赋为nan。</span>
+<span class="sd">            :param series: 输入序列</span>
+<span class="sd">            :param func: 给定函数，要求符合 func :: np.Serial -&gt; digit Object</span>
+<span class="sd">            :param interval=10: 时序 </span>
+<span class="sd">            :returns: 新的序列 </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadCalWithFilter</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="p">[],</span> <span class="n">interval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndicatorGallery.getAheadCalWithFilter"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getAheadCalWithFilter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getAheadCalWithFilter</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">calfunc</span><span class="p">,</span> <span class="n">filterfunc</span><span class="p">,</span> <span class="n">filterfuncparams</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        得到该序列接下来interval个值，先用给定的过滤函数对数据进行过滤，再用给定的运算函数进行运算，返回运算结果序列。</span>
+<span class="sd">        数据自己本身不算在内，如果数据量不够，当赋为nan。</span>
+<span class="sd">            :param series: 输入序列</span>
+<span class="sd">            :param calfunc: 给定运算函数，要求符合 calfunc :: np.Serial -&gt; digit Object</span>
+<span class="sd">            :param filterfunc: 给定过滤函数，要求符合 filterfun :: filterfuncparams -&gt; index -&gt; True/False，如果返回结果为False，赋为nan</span>
+<span class="sd">            :param filterfuncparams: 过滤函数的参数，真正传入函数时，参数会加上index（代表处理数据的下标）</span>
+<span class="sd">            :param interval=10: 时序</span>
+<span class="sd">            :returns: 新的序列</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="n">datalist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+            <span class="n">processbar</span> <span class="o">=</span> <span class="n">CMDProcessBar</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+                <span class="n">processbar</span><span class="o">.</span><span class="n">showProcess</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">+</span> <span class="n">interval</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">):</span>
+                <span class="n">datalist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">filterfunc</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">filterfuncparams</span> <span class="o">+</span> <span class="p">[</span><span class="n">index</span><span class="p">])):</span>
+                <span class="n">datalist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">calfunc</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">index</span> <span class="o">+</span> <span class="n">interval</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">datalist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+            <span class="n">processbar</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;Calculator Done!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">datalist</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndicatorGallery.getMACD"><a class="viewcode-back" href="../indicatorGallery.html#indicatorGallery.IndicatorGallery.getMACD">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getMACD</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">llong</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="mi">9</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        计算该列MACD的值。</span>
+<span class="sd">        MACD[i + 1] = 2 * a * (emashort[i + 1] - emalong[i + 1] - MACD[i]) - MACD[i]</span>
+<span class="sd">            :param self: 类变量本身</span>
+<span class="sd">            :param short=12: short ema的a值，一般为12</span>
+<span class="sd">            :param llong=26: long ema的a值，一般为26</span>
+<span class="sd">            :param diff=9: diff的a值，一般为9</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="n">se_macd</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># 初始化第一个值</span>
+        <span class="n">emashort</span><span class="p">,</span> <span class="n">emalong</span> <span class="o">=</span> <span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">se_macd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">emashort</span> <span class="o">-</span> <span class="n">emalong</span><span class="p">)</span>
+        <span class="c1"># 递归计算MACD</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">))[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">emashort</span> <span class="o">=</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">_calEMA</span><span class="p">(</span><span class="n">short</span><span class="p">,</span> <span class="n">series</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">emashort</span><span class="p">)</span>
+            <span class="n">emalong</span> <span class="o">=</span> <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">_calEMA</span><span class="p">(</span><span class="n">llong</span><span class="p">,</span> <span class="n">series</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">emalong</span><span class="p">)</span>
+            <span class="n">se_macd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">_calEMA</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">emashort</span> <span class="o">-</span> <span class="n">emalong</span><span class="p">),</span> <span class="n">se_macd</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">se_macd</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/1day/000001.csv&#39;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+    
+    <span class="c1"># 测试IndicatorGallery类</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getNext</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadData</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadMin</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadMax</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadAvg</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadSum</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getMACD</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadCal</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">IndicatorGallery</span><span class="o">.</span><span class="n">getAheadCalWithFilter</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;price_change&#39;</span><span class="p">])</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cmdColor.html">CMDCOLOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cmdProcessBar.html">CMDPROCESSBAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drawPlot.html">DRAWPLOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fastResearchData.html">FASTRESEARCHDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indicatorGallery.html">INDICATORGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main.html">MAIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modelEngineer.html">MODELENGINEER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../normalizationGallery.html">NORMALIZATIONGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../refreshData.html">REFRESHDATA</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

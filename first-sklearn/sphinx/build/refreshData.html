@@ -1,0 +1,189 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>REFRESHDATA &#8212; first-sklearn 2.7 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="NORMALIZATIONGALLERY" href="normalizationGallery.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-refreshData">
+<span id="refreshdata"></span><h1>REFRESHDATA<a class="headerlink" href="#module-refreshData" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="refreshData.RefreshData">
+<em class="property">class </em><code class="descclassname">refreshData.</code><code class="descname">RefreshData</code><a class="reference internal" href="_modules/refreshData.html#RefreshData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#refreshData.RefreshData" title="Permalink to this definition">¶</a></dt>
+<dd><p>数据清洗类，用于处理nan的数据</p>
+<dl class="staticmethod">
+<dt id="refreshData.RefreshData.deleteRowWithNan">
+<em class="property">static </em><code class="descname">deleteRowWithNan</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/refreshData.html#RefreshData.deleteRowWithNan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#refreshData.RefreshData.deleteRowWithNan" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>删除含有Nan数据的行</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param df:</th><td class="field-body">传入的DataFrame</td>
+</tr>
+<tr class="field-even field"><th class="field-name">returns:</th><td class="field-body">返回删除后的DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="refreshData.RefreshData.predictNanByColumn">
+<em class="property">static </em><code class="descname">predictNanByColumn</code><span class="sig-paren">(</span><em>df</em>, <em>columnname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/refreshData.html#RefreshData.predictNanByColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#refreshData.RefreshData.predictNanByColumn" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>通过线性回归算法，预测指定列的nan值</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param df:</th><td class="field-body">传入的DataFrame</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param columnname:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">列名</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">返回填充后的指定列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="refreshData.RefreshData.setNanByColumn">
+<em class="property">static </em><code class="descname">setNanByColumn</code><span class="sig-paren">(</span><em>df</em>, <em>values</em>, <em>columnname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/refreshData.html#RefreshData.setNanByColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#refreshData.RefreshData.setNanByColumn" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>将给定列的nan值修改为给定值</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param df:</th><td class="field-body">传入的DataFrame</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param values:</th><td class="field-body">修改的指定值</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param columnname:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">列名</td>
+</tr>
+<tr class="field-even field"><th class="field-name">returns:</th><td class="field-body">返回修改后的指定列</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">first-sklearn</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cmdColor.html">CMDCOLOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmdProcessBar.html">CMDPROCESSBAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drawPlot.html">DRAWPLOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fastResearchData.html">FASTRESEARCHDATA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indicatorGallery.html">INDICATORGALLERY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">MAIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelEngineer.html">MODELENGINEER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalizationGallery.html">NORMALIZATIONGALLERY</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">REFRESHDATA</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="normalizationGallery.html" title="previous chapter">NORMALIZATIONGALLERY</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, huziang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/refreshData.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

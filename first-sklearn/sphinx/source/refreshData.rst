@@ -1,6 +1,6 @@
-MYMODEL
-=======
-.. automodule:: mymodel
+REFRESHDATA
+===========
+.. automodule:: refreshData
     :members:
 
 * :ref:`genindex`
