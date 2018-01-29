@@ -73,12 +73,13 @@ class CMDColor:
         """
         return ctypes.windll.kernel32.SetConsoleTextAttribute(handle, self.color)
 
-    def resetColor(self):
+    def resetColor(self, handle=stdouthandle):
         """
         回复原先颜色
             :param self: 类变量本身
+            :param handle=stdouthandle: 输入输出接口
         """   
-        CMDColor.setCmdTextColor(FOREGROUND_DARKWHITE)
+        return ctypes.windll.kernel32.SetConsoleTextAttribute(handle, FOREGROUND_DARKWHITE)
 
     def printWithColor(self, mess):
         """
@@ -86,7 +87,7 @@ class CMDColor:
             :param self: 类变量本身
             :param mess: 输出信息
         """
-        self.setCmdTextColor(self.color)
+        self.setCmdTextColor()
         sys.stdout.write(mess)
         self.resetColor()
 

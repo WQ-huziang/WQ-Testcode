@@ -6,12 +6,10 @@ __date__ = '2018-1-29 16:31'
 import sys, time
 from cmdColor import *
 
-barcolor = FOREGROUND_BLACK | BACKGROUND_WHITE
-
 class CMDProcessBar():
     '显示处理进度的类'
 
-    def __init__(self, maxstep, length=50, donesymbol='*', undonesymbol='-'):
+    def __init__(self, maxstep, length=50, donesymbol='*', undonesymbol='-', barcolor=FOREGROUND_BLACK | BACKGROUND_WHITE):
         """
         构造函数
             :param self: 类变量本身
@@ -25,6 +23,7 @@ class CMDProcessBar():
         self.length = length
         self.done = donesymbol
         self.undone = undonesymbol
+        self.barcmdcolor = CMDColor(barcolor)
 
     def showProcess(self, i=None):
         """
@@ -45,7 +44,7 @@ class CMDProcessBar():
         processbar = '\r[' + self.done * donenum + self.undone * undonenum + '] '\
                       + '%.2f' % percent + '%'
         # 输出并清空缓存
-        CMDColor.printWithColor(processbar, barcolor)
+        self.barcmdcolor.printWithColor(processbar)
         sys.stdout.flush()
 
     def close(self, words='DONE'):
@@ -54,7 +53,7 @@ class CMDProcessBar():
             :param self: 类变量本身
             :param words='DONE': 结束字符
         """
-        CMDColor.printWithColor('\n' + words, barcolor)
+        self.barcmdcolor.printWithColor('\n' + words)
         self.i = 0
 
 if __name__=='__main__':
