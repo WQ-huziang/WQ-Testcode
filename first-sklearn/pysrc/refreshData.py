@@ -8,7 +8,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from sklearn.ensemble import GradientBoostingRegressor
 
-class RefleshData:
+class RefreshData:
     '数据清洗类，用于处理nan的数据'
 
     @staticmethod
@@ -54,6 +54,6 @@ if __name__ == '__main__':
     df = pd.read_csv('../data/5min/000001.csv')
     del df['date']
     df.open[range(10, 20)] = np.nan
-    RefleshData.deleteRowWithNan(df)
-    RefleshData.setNanByColumn(df, df.open.mean(), 'open')
-    RefleshData.predictNanByColumn(df, 'open')
+    RefreshData.deleteRowWithNan(df)
+    RefreshData.setNanByColumn(df, df.open.mean(), 'open')
+    RefreshData.predictNanByColumn(df, 'open')

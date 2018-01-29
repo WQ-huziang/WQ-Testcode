@@ -28,9 +28,9 @@ class FastResearchData:
             :param df: 传入的DataFrame
         """
         if not isinstance(df, pd.DataFrame):
-            print "df is not DataFrame!"
+            #print "df is not DataFrame!"
             return
-        self.stockdata[str(stockname)] = df
+        self.stockdata[str(stockname)] = df.sort_values(by='date').reset_index(drop=True)
 
     def addDataFromCSV(self, filename):
         """
@@ -39,9 +39,9 @@ class FastResearchData:
             :param filename: csv数据文件路径，包含后缀名
         """
         if os.path.exists(self.dirpath + filename) == False:
-            print "Not exist " + filename +" file!"
+            #print "Not exist " + filename +" file!"
             return
-        self.stockdata[filename[filename.rfind('/') + 1:filename.rfind('.')]] = pd.read_csv(self.dirpath + filename)
+        self.stockdata[filename[filename.rfind('/') + 1:filename.rfind('.')]] = pd.read_csv(self.dirpath + filename).sort_values(by='date').reset_index(drop=True)
 
 
     def delDataByStockname(self, stockname):
@@ -69,6 +69,16 @@ class FastResearchData:
         allstockdata = allstockdata.sort_index(ascending=True)
         allstockdata = allstockdata.reset_index(drop=True)
         return allstockdata
+
+    def setDatadict(self, datadict):
+        """
+        docstring here
+            :param self: 类变量本身
+            :param datadict: 传入的字典
+        """   
+        if not isinstance(datadict, dict):
+            raise Exception('datadict is not a dict!')
+        self.stockdata = datadict
 
     def getDatadict(self):
         """
