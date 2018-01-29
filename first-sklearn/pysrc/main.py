@@ -5,7 +5,7 @@ __date__ = '2018-1-28 18:54'
 
 from fastResearchData import FastResearchData
 from indicatorGallery import IndicatorGallery
-from RefreshData import RefreshData
+from refreshData import RefreshData
 from normalizationGallery import NormalizationGallery
 from modelEngineer import ModelEngineer
 from drawPlot import DrawPlot
