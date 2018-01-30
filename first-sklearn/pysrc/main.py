@@ -83,6 +83,14 @@ def setArgParse():
         type=int,
         default=10,
     )
+    parser.add_argument(
+        '-f',
+        '--function',
+        help='The function you want to select',
+        type=str,
+        default='',
+        choices=['avg', 'min', 'max', 'sum']
+    )
     return parser.parse_args()
     
 
@@ -125,11 +133,23 @@ if __name__ == '__main__':
                 break
             print 'Your input is wrong, Please choice a column:',
 
+
     # STEP2:数据筛选，求出Y值
     concatdf = fastdata.concatAllStockData()
+    # 筛选计算函数
+    if args.function == 'avg':
+        calfunc = np.average
+    elif args.function == 'min':
+        calfunc = np.min
+    elif args.function == 'max':
+        calfunc = np.max
+    elif args.function == 'sum':
+        calfunc = np.sum
+    else:
+        calfunc = lambda ls : ls[-1]
+
     # 进行数据清洗，如果预测的数据时间不对，会被赋值成nan
     if args.reflesh:
-        calfunc = lambda ls : ls[-1]
         filfunc = lambda df, time, inv, ind : \
             int((datetime.strptime(df.date[ind + inv], "%Y-%m-%d %H:%M:%S") - datetime.strptime(df.date[ind], "%Y-%m-%d %H:%M:%S")).total_seconds()) / 300 == inv
         concatdf[predictcolumn + 'predict'] = IndicatorGallery.getAheadCalWithFilter(
@@ -144,7 +164,7 @@ if __name__ == '__main__':
         datacmdcolor.printWithColor(str(len(concatdf)) + '\n')
     # 普通的前移数据
     else:
-        concatdf[predictcolumn + 'predict'] = IndicatorGallery.getAheadData(concatdf[predictcolumn], args.interval)
+        concatdf[predictcolumn + 'predict'] = IndicatorGallery.getAheadCal(concatdf[predictcolumn], calfunc, args.interval)
     
     # STEP3:数据刷新，去除含有nan的数据
     concatdf = RefreshData.deleteRowWithNan(concatdf)
@@ -191,7 +211,7 @@ if __name__ == '__main__':
     while not os.path.exists(args.dirpath + "%06d" % randomnum + '.csv'):
         randomnum = random.randint(1, 999999)
     X = pd.read_csv(args.dirpath + "%06d" % randomnum + '.csv')
-    X[predictcolumn + 'predict'] = IndicatorGallery.getAheadData(X[predictcolumn], args.interval)
+    X[predictcolumn + 'predict'] = IndicatorGallery.getAheadCal(X[predictcolumn], calfunc, args.interval)
     X = RefreshData.deleteRowWithNan(X)
     real_y = pd.Series(X[predictcolumn], name='real')
     predict_y = pd.Series(me.predict(X[othercolumn]), name='predict')
