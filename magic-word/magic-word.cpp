@@ -103,6 +103,7 @@ void BFS() {
 	while (!bfsqueue.empty()) {
 		Node *temp = bfsqueue.top();
 		bfsqueue.pop();
+		store.insert(temp);
 		
 		for (int i = 0; i < k; i++) {
 			int index = temp->str.find(ministr[i], 0);
@@ -120,6 +121,10 @@ void BFS() {
 				auto it = store.find(newnode);
 				fp << "NUMS:" << ++nums << endl;
 				fp << "INSET?" << (it != store.end()) << endl;
+				for (Node *i : store) {
+					fp << i->str << " ";
+				}
+				fp << endl;
 				if (it != store.end()) {
 					if (newnode->sumvalue > (*it)->sumvalue)
 						*(*it) = *newnode;
