@@ -64,6 +64,8 @@ struct NodeCompare {
 
 Node *null;            // replace NULL
 Node *maxnode;         // max sum value node
+queue<Node*> bfsqueue;
+set<Node*, NodeCompare> store;
 
 // get input numbers	
 void getInput(FILE *fin) {
@@ -96,9 +98,6 @@ void printOutput(FILE *fout) {
 
 // BFS
 void BFS() {
-	queue<Node*> bfsqueue;
-	set<Node*, NodeCompare> store;
-
 	// add the begin node at first
 	bfsqueue.push(null);
 	store.insert(null);
@@ -159,6 +158,9 @@ int main(int argc, char const *argv[])
 	BFS();
 
 	printOutput(fout);
+
+	for (auto it = store.begin(); it != store.end(); ++it)
+		free((*it));
 
 	fclose(fin);
 	fclose(fout);
