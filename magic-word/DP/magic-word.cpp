@@ -20,10 +20,12 @@ short value[200];      // string's value
 //          (if (ministr[k] conpare [x, i), [j, y):
 //               if (F(i, j) == -1)  return -1
 //               else  return F(i, j) + value[k])
-short dpfull[33][33];   
+int dpfull[33][33];   
 
-// dp[i, j] means the index (
-)
+// dp[i, j] means the index(i, j)'s value
+// G(x, y) = 0, x == y
+//         = max (for i : x -> y)
+//          (G(x, i) + G(i, y))
 int dpnotfull[33][33];
 
 // get input numbers	
@@ -41,18 +43,7 @@ void getInput(FILE *fin) {
 // output answer
 void printOutput(FILE *fout) {
 	// output
-	// stack<Node*> outsta;
-	// Node *temp = maxnode;
-	// while (temp != null) {
-	// 	outsta.push(temp);
-	// 	temp = temp->father;
-	// }
-	// while (!outsta.empty()) {
-	// 	temp = outsta.top();
-	// 	outsta.pop();
-	// 	fprintf(fout, "%d %s\n", temp->index, ministr[temp->strlistindex].c_str());
-	// }
-	// fprintf(fout, "%d\n", maxnode->calculateSumValue());
+	fprintf(fout, "%d\n", dpnotfull[0][n]);
 }
 
 // judge whether is suitable
@@ -68,14 +59,14 @@ void DPfull() {
 	// get the ministring length
 	int minstrlength = 32;
 	for (int i = 0; i < k; ++i)
-		if (minstrlength < ministr[i].length())  minstrlength = ministr[i].length();
+		if (minstrlength > ministr[i].length())  minstrlength = ministr[i].length();
 
 	// reset
-	for (int i = 0; i < n; i++)
-		for (int j = 0; j < n; j++)  dpfull[i][j] = -1;
+	for (int i = 0; i <= n; i++)
+		for (int j = 0; j <= n; j++)  dpfull[i][j] = -1;
 
 	// if (i == j): F(i, j) = 0
-	for (int i = 0; i < n; ++i)
+	for (int i = 0; i <= n; ++i)
 		dpfull[i][i] = 0;
 	
 	// if originstr[i, j) is ministr[k]: F(i, j) = value[k]
@@ -91,8 +82,8 @@ void DPfull() {
 	//           (if (ministr[k] fit [x, i), [j, y):
 	//                if (F(i, j) == -1)  return -1
 	//                else  return F(i, j) + value[k])
-	for (int x = 0; x < n; ++x) {
-		for (int l = minstrlength; l < n - x; ++l) {
+	for (int l = minstrlength; l <= n; ++l) {
+		for (int x = 0; x <= n - l; ++x) {	
 			int y = x + l;
 			
 			for (int i = 0; i < k; ++i) {
@@ -118,7 +109,38 @@ void DPfull() {
 
 // DPnotfull, calculater the value dpnotfull
 void DPnotFull() {
+	// get the ministring length
+	int minstrlength = 32;
+	for (int i = 0; i < k; ++i)
+		if (minstrlength > ministr[i].length())  minstrlength = ministr[i].length();
 
+	// reset
+	for (int i = 0; i <= n; ++i)
+		for (int j = 0; j <= n; ++j)  dpnotfull[i][j] = 0;
+
+	// G(x, y) = 0, x == y
+	//         = max (for i : x -> y)
+	//          (G(x, i) + G(i, y))
+	for (int l = minstrlength; l <= n; ++l) {
+		for (int x = 0; x <= n - l; ++x) {
+			int y = x + l;
+			if (dpfull[x][y] != -1)  dpnotfull[x][y] = dpfull[x][y];
+			for (int i = x + 1; i < y; ++i)
+				dpnotfull[x][y] = max(dpnotfull[x][y], dpnotfull[x][i] + dpnotfull[i][y]);
+		}
+	}
+
+	return;
+}
+
+void debugshow(bool isfull) {
+	for (int i = 0; i <= n; ++i) {
+		for (int j = 0; j <= n; ++j) {
+			if (isfull)  cout << dpfull[i][j] << " ";
+			else  cout << dpnotfull[i][j] << " ";
+		}
+		cout << endl;
+	}
 }
 
 int main(int argc, char const *argv[])
@@ -134,18 +156,16 @@ int main(int argc, char const *argv[])
 	
 	getInput(fin);
 
-	// replace NULL
-	//null = new Node(0, 0, originstr);
-	//maxnode = null;
-
-
-
 	DPfull();
+	//debugshow(true);
+
+	DPnotFull();
+	//debugshow(false);
 
 	printOutput(fout);
 
 	fclose(fin);
-	//fclose(fout);
+	fclose(fout);
 
 	return 0;
 }
