@@ -169,7 +169,7 @@ if __name__ == '__main__':
     # STEP3:数据刷新，去除含有nan的数据
     concatdf = RefreshData.deleteRowWithNan(concatdf)
 
-
+    
     lintcmdcolor.printWithColor('Refresh Data Finish!\n')
     print 'Remain stock data\'s size is ',
     datacmdcolor.printWithColor(str(len(concatdf)) + '\n')
@@ -227,3 +227,7 @@ if __name__ == '__main__':
     dp.drawLinePlot(real_y, predict_y)
     dp.drawJointPlot(real_y, predict_y)
     dp.drawDensityCurvePlot(real_y - predict_y)
+
+
+python main.py -xseries avg(open),avg(close), macd(ma5)
+eval("avg(\"open\")")
