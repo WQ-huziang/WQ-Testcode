@@ -11,9 +11,9 @@ sphinx是python支持的一种文档自动生成工具，仅需少量操作，�
 
 使用pip安装。如果连pip都没有，请先安装anoconda。
 
-···bash
+~~~bash
 $ pip install sphinx
-···
+~~~
 
 ## 创建项目
 
@@ -26,14 +26,11 @@ $ sphinx-quickstart
 影响比较大的有下面几条：
 
 ~~~bash
-
- # 将source文件夹与build文件夹分离，建议选y
+# 将source文件夹与build文件夹分离，建议选y
 > Separate source and build directories (y/n) [n]: y
- 
- # 自动插入模块中的docstring注释，不用想，无脑y
+# 自动插入模块中的docstring注释，不用想，无脑y
 > autodoc: automatically insert docstrings from modules (y/n) [n]: y
-
- # 是否让文件中包含你的源代码，可酌情选择
+# 是否让文件中包含你的源代码，可酌情选择
 > viewcode: include links to the source code of documented Python objects (y/n) [n]: y
 ~~~
 
@@ -133,7 +130,6 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
 ~~~
 
 实际上，rst是一种标记语言，类似markdown，有兴趣的可以自己去了解。但是如果不深究的话，知道两点就可以：
